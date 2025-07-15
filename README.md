@@ -4,6 +4,9 @@ GERARD LOVE JANA FOREVER NAD EVER
 
 TANGINA BARRON LOVE SHIELA
 
+
+selos si albert kay janna 
+
 A Flutter application that provides an object-oriented, event-based feedback system with star ratings. Each event has its own dedicated feedback section with existing comments that always remain visible, and users can add, edit, and delete their own feedback. Feedback is always tied to a unique event by a 10-digit numeric event ID.
 
 **Recent Improvements:**
