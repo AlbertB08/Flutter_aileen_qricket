@@ -10,19 +10,19 @@ import 'base_screen.dart';
 import '../services/storage_service.dart';
 
 /// Screen for managing feedback for a specific event
-class FeedbackScreen extends BaseScreen {
+class SelectedEventScreen extends BaseScreen {
   final EventModel selectedEvent;
 
-  const FeedbackScreen({
+  const SelectedEventScreen({
     super.key,
     required this.selectedEvent,
   });
 
   @override
-  State<FeedbackScreen> createState() => _FeedbackScreenState();
+  State<SelectedEventScreen> createState() => _SelectedEventScreenState();
 }
 
-class _FeedbackScreenState extends BaseScreenState<FeedbackScreen> {
+class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> {
   final FeedbackService _feedbackService = FeedbackService();
   final EventService _eventService = EventService();
   List<FeedbackModel> _feedbackList = [];

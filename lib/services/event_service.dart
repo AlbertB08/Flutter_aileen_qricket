@@ -1,5 +1,7 @@
 import '../models/event_model.dart';
+import '../models/news_model.dart' as news;
 import 'storage_service.dart';
+import 'data_service.dart';
 
 /// Service class responsible for managing event operations
 class EventService {
@@ -27,9 +29,9 @@ class EventService {
       await _storageService.initialize();
       await _loadEvents();
       
-      // If no events exist, create predefined events
+      // If no events exist, load from JSON data
       if (_events.isEmpty) {
-        await _createPredefinedEvents();
+        await _loadEventsFromJson();
       }
       
       _isInitialized = true;
@@ -49,6 +51,18 @@ class EventService {
     }
   }
 
+  /// Load events from JSON data
+  Future<void> _loadEventsFromJson() async {
+    try {
+      await DataService.loadInitialData();
+      _events.clear();
+      _events.addAll(DataService.events);
+      await _saveEvents();
+    } catch (e) {
+      throw EventServiceException('Failed to load events from JSON: $e');
+    }
+  }
+
   /// Save events to storage
   Future<void> _saveEvents() async {
     try {
@@ -56,66 +70,6 @@ class EventService {
     } catch (e) {
       throw EventServiceException('Failed to save events: $e');
     }
-  }
-
-  /// Create predefined events
-  Future<void> _createPredefinedEvents() async {
-    final predefinedEvents = [
-      EventModel(
-        id: '1000000001',
-        name: 'Tech Conference 2024',
-        description: 'Annual technology conference featuring the latest innovations in software development, AI, and cloud computing. Join industry experts for networking and learning opportunities.',
-        category: 'Technology',
-        date: DateTime.now(), // Ongoing (today)
-        location: 'Convention Center, Downtown',
-        maxParticipants: 500,
-        existingComments: [
-          {'title': 'Outstanding Speakers', 'comment': 'Excellent speakers and content!', 'rating': 5},
-          {'title': 'Great Networking', 'comment': 'Great networking opportunities', 'rating': 4},
-          {'title': 'Well Organized', 'comment': 'Well-organized event', 'rating': 5},
-          {'title': 'Inspiring Content', 'comment': 'Inspiring presentations', 'rating': 4},
-          {'title': 'Excellent Venue', 'comment': 'Good venue and facilities', 'rating': 4},
-        ],
-      ),
-      EventModel(
-        id: '1000000002',
-        name: 'Music Festival',
-        description: 'Three-day music festival featuring local and international artists across multiple genres. Food vendors, art installations, and family-friendly activities included.',
-        category: 'Entertainment',
-        date: DateTime.now().subtract(const Duration(days: 10)), // Ended
-        location: 'Central Park',
-        maxParticipants: 2000,
-        existingComments: [
-          {'title': 'Amazing Performances', 'comment': 'Amazing performances!', 'rating': 5},
-          {'title': 'Great Atmosphere', 'comment': 'Great atmosphere and vibes', 'rating': 5},
-          {'title': 'Well Coordinated', 'comment': 'Well-coordinated logistics', 'rating': 4},
-          {'title': 'Fantastic Food', 'comment': 'Fantastic food options', 'rating': 4},
-          {'title': 'Perfect Setting', 'comment': 'Perfect weather and setting', 'rating': 5},
-        ],
-      ),
-      EventModel(
-        id: '1000000003',
-        name: 'Business Networking Workshop',
-        description: 'Professional development workshop focused on building business relationships, effective communication, and networking strategies for entrepreneurs and professionals.',
-        category: 'Business',
-        date: DateTime.now().subtract(const Duration(days: 20)), // Ended
-        location: 'Business Center, West Side',
-        maxParticipants: 100,
-        existingComments: [
-          {'title': 'Very Informative', 'comment': 'Very informative and practical', 'rating': 5},
-          {'title': 'Great Networking', 'comment': 'Great networking opportunities', 'rating': 4},
-          {'title': 'Professional Structure', 'comment': 'Professional and well-structured', 'rating': 5},
-          {'title': 'Valuable Insights', 'comment': 'Valuable insights shared', 'rating': 4},
-          {'title': 'Excellent Facilitator', 'comment': 'Excellent facilitator', 'rating': 5},
-        ],
-      ),
-    ];
-
-    for (final event in predefinedEvents) {
-      _events.add(event);
-    }
-    
-    await _saveEvents();
   }
 
   /// Add new event

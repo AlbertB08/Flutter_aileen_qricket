@@ -1,0 +1,70 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "johndoe@email.com",
+      "name": "John Doe",
+      "password": "johndoe123",
+      "participatedEventIds": ["1000000001"],
+      "activityLog": [
+        {
+          "datetime": "2024-06-01T10:30:00.000Z",
+          "activity": "Account Registration",
+          "activityDetails": "User registered with email johndoe@email.com",
+          "ip": "192.168.1.100"
+        },
+        {
+          "datetime": "2024-06-01T10:35:00.000Z",
+          "activity": "Account Verification",
+          "activityDetails": "Email verification completed successfully",
+          "ip": "192.168.1.100"
+        },
+        {
+          "datetime": "2024-06-01T11:15:00.000Z",
+          "activity": "Login",
+          "activityDetails": "User logged in successfully",
+          "ip": "192.168.1.100"
+        },
+        {
+          "datetime": "2024-06-01T14:20:00.000Z",
+          "activity": "Event Participation",
+          "activityDetails": "Joined Tech Conference 2024",
+          "ip": "192.168.1.100"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "email": "juan.delacruz@email.com",
+      "name": "Juan Dela Cruz",
+      "password": "juandelacruz123",
+      "participatedEventIds": ["1000000002"],
+      "activityLog": [
+        {
+          "datetime": "2024-06-01T09:15:00.000Z",
+          "activity": "Account Registration",
+          "activityDetails": "User registered with email juan.delacruz@email.com",
+          "ip": "192.168.1.101"
+        },
+        {
+          "datetime": "2024-06-01T09:20:00.000Z",
+          "activity": "Account Verification",
+          "activityDetails": "Email verification completed successfully",
+          "ip": "192.168.1.101"
+        },
+        {
+          "datetime": "2024-06-01T09:25:00.000Z",
+          "activity": "Login",
+          "activityDetails": "User logged in successfully",
+          "ip": "192.168.1.101"
+        },
+        {
+          "datetime": "2024-06-01T13:45:00.000Z",
+          "activity": "Event Participation",
+          "activityDetails": "Joined Music Festival",
+          "ip": "192.168.1.101"
+        }
+      ]
+    }
+  ]
+} 

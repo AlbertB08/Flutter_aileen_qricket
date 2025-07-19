@@ -1,0 +1,155 @@
+{
+  "events": [
+    {
+      "id": "1000000001",
+      "name": "Tech Conference 2024",
+      "description": "Join us for the biggest tech conference of the year! Learn about the latest trends in technology, network with industry experts, and discover innovative solutions.",
+      "category": "Technology",
+      "date": "2024-12-15T09:00:00.000Z",
+      "location": "Convention Center, Metro Manila",
+      "maxParticipants": 500,
+      "existingComments": [
+        {
+          "title": "Outstanding Speakers",
+          "comment": "Excellent speakers and content!",
+          "rating": 5
+        },
+        {
+          "title": "Great Networking",
+          "comment": "Great networking opportunities",
+          "rating": 4
+        }
+      ],
+      "news": [
+        {
+          "date": "2024-06-01T10:00:00.000Z",
+          "title": "Early Bird Registration Now Open!",
+          "message": "Don't miss out on our early bird pricing! Register before July 31st and save 30% on your conference ticket. This year's event will feature keynote speakers from Google, Microsoft, and other tech giants. Early registration also includes exclusive access to pre-conference workshops and networking events.",
+          "image": "https://example.com/early-bird.jpg"
+        },
+        {
+          "date": "2024-06-01T14:00:00.000Z",
+          "title": "New Speakers Announced",
+          "message": "We're excited to announce additional speakers for Tech Conference 2024! Joining our lineup are AI experts from OpenAI, cybersecurity specialists from leading firms, and startup founders sharing their success stories. The complete speaker list will be available next week.",
+          "image": "https://example.com/speakers.jpg"
+        }
+      ]
+    },
+    {
+      "id": "1000000002",
+      "name": "Music Festival",
+      "description": "Experience the ultimate music festival with top local and international artists. Three days of amazing performances, food, and unforgettable memories.",
+      "category": "Entertainment",
+      "date": "2024-11-20T16:00:00.000Z",
+      "location": "Music Park, Quezon City",
+      "maxParticipants": 1000,
+      "existingComments": [
+        {
+          "title": "Amazing Performances",
+          "comment": "Amazing performances!",
+          "rating": 5
+        },
+        {
+          "title": "Great Atmosphere",
+          "comment": "Great atmosphere and vibes",
+          "rating": 5
+        }
+      ],
+      "news": [
+        {
+          "date": "2024-06-01T12:00:00.000Z",
+          "title": "Lineup Revealed!",
+          "message": "The complete lineup for Music Festival 2024 has been revealed! Headliners include international stars and local favorites. From rock to pop, EDM to acoustic, there's something for every music lover. VIP packages are selling fast - secure your spot today!",
+          "image": "https://example.com/lineup.jpg"
+        }
+      ]
+    },
+    {
+      "id": "1000000003",
+      "name": "Business Summit",
+      "description": "Connect with business leaders, entrepreneurs, and investors. Learn about market trends, investment opportunities, and strategies for business growth.",
+      "category": "Business",
+      "date": "2024-10-10T08:30:00.000Z",
+      "location": "Business Center, Makati",
+      "maxParticipants": 200,
+      "existingComments": [
+        {
+          "title": "Very Informative",
+          "comment": "Very informative and practical",
+          "rating": 5
+        },
+        {
+          "title": "Great Networking",
+          "comment": "Great networking opportunities",
+          "rating": 4
+        }
+      ],
+      "news": [
+        {
+          "date": "2024-06-01T09:00:00.000Z",
+          "title": "Investment Panel Announced",
+          "message": "Our investment panel for Business Summit 2024 is now complete! Featuring venture capitalists, angel investors, and successful entrepreneurs who will share insights on funding strategies, market analysis, and building scalable businesses. Don't miss this opportunity to learn from the best in the industry.",
+          "image": "https://example.com/investment-panel.jpg"
+        }
+      ]
+    },
+    {
+      "id": "1000000004",
+      "name": "Sports Tournament",
+      "description": "Compete in various sports categories including basketball, volleyball, and badminton. Open to all skill levels with prizes for winners.",
+      "category": "Sports",
+      "date": "2024-09-25T07:00:00.000Z",
+      "location": "Sports Complex, Taguig",
+      "maxParticipants": 150,
+      "existingComments": [
+        {
+          "title": "Well Organized",
+          "comment": "Well-organized event",
+          "rating": 5
+        },
+        {
+          "title": "Great Competition",
+          "comment": "Great competition and sportsmanship",
+          "rating": 4
+        }
+      ],
+      "news": [
+        {
+          "date": "2024-06-01T11:00:00.000Z",
+          "title": "Registration Deadline Extended",
+          "message": "Due to popular demand, we've extended the registration deadline for Sports Tournament 2024! You now have until August 15th to register your team. New categories have been added including mixed doubles for badminton and 3x3 basketball. Early registrants get free tournament t-shirts!",
+          "image": "https://example.com/registration.jpg"
+        }
+      ]
+    },
+    {
+      "id": "1000000005",
+      "name": "Art Exhibition",
+      "description": "Discover amazing artworks from local and international artists. Various art forms including paintings, sculptures, and digital art.",
+      "category": "Arts",
+      "date": "2024-12-01T10:00:00.000Z",
+      "location": "Art Gallery, Bonifacio Global City",
+      "maxParticipants": 100,
+      "existingComments": [
+        {
+          "title": "Beautiful Artwork",
+          "comment": "Beautiful and inspiring artwork",
+          "rating": 5
+        },
+        {
+          "title": "Great Curation",
+          "comment": "Excellent curation and presentation",
+          "rating": 4
+        }
+      ],
+      "news": [
+        {
+          "date": "2024-06-01T13:00:00.000Z",
+          "title": "Featured Artists Announced",
+          "message": "We're thrilled to announce the featured artists for Art Exhibition 2024! The exhibition will showcase works from both established and emerging artists, including international guests making their Philippine debut. Special guided tours will be available for art enthusiasts and collectors.",
+          "image": "https://example.com/artists.jpg"
+        }
+      ]
+    }
+  ]
+} 

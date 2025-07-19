@@ -120,7 +120,7 @@ class SharedPreferencesStorageService implements StorageService {
   static Future<String> getOrCreateUserId() async {
     final prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString(_userIdKey);
-    if (userId.isEmpty) {
+    if (userId == null || userId.isEmpty) {
       userId = 'user_${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecondsSinceEpoch % 10000}';
       await prefs.setString(_userIdKey, userId);
     }

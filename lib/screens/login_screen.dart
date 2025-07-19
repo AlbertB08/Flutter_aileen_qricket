@@ -33,14 +33,21 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
+      bool success;
       if (_isLogin) {
-        await AuthService.login(_emailController.text, _passwordController.text);
+        success = await AuthService.login(_emailController.text, _passwordController.text);
+        if (!success) {
+          throw Exception('Invalid email or password');
+        }
       } else {
-        await AuthService.register(
+        success = await AuthService.register(
           _emailController.text,
-          _passwordController.text,
           _nameController.text,
+          _passwordController.text,
         );
+        if (!success) {
+          throw Exception('Email already exists');
+        }
       }
 
       if (mounted) {
@@ -106,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 80,
                           decoration: BoxDecoration(
                             color: const Color(0xFF00B388),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: const Center(
                             child: Text(
@@ -121,17 +128,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Qricket',
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF00B388),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
                           _isLogin ? 'Welcome Back!' : 'Create Account',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.grey[300] 
+                                : Colors.grey[600],
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -230,35 +231,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: const TextStyle(color: Color(0xFF00B388)),
                           ),
                         ),
-
-                        // Demo credentials
-                        if (_isLogin) ...[
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  'Demo Credentials:',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Email: admin@qricket.com\nPassword: admin123',
-                                  style: TextStyle(color: Colors.grey[600]),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),

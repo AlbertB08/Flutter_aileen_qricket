@@ -56,6 +56,19 @@ class EventCard extends BaseCard {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Image placeholder
+                  Container(
+                    height: 140,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.image, size: 60, color: Colors.white70),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   // Header with title and category
                   Row(
                     children: [

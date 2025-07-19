@@ -3,6 +3,7 @@ import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'event_selection_screen.dart';
+import 'account_settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final user = await AuthService.getCurrentUser();
+    final user = AuthService.currentUser;
     setState(() {
       _currentUser = user;
     });
@@ -194,9 +195,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   subtitle: 'App preferences',
                   color: Colors.grey,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Settings feature coming soon!'),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const AccountSettingsScreen(),
                       ),
                     );
                   },
@@ -314,6 +315,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _navigateToAccountSettings() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AccountSettingsScreen(
+          onUserInfoChanged: _loadCurrentUser,
+        ),
+      ),
+    );
+    _loadCurrentUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,19 +345,49 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+          if (_currentUser != null)
+            Row(
+              children: [
+                Text(
+                  _currentUser!.name,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.account_circle),
+                  onPressed: _navigateToAccountSettings,
+                  tooltip: 'Account',
+                ),
+              ],
+          ),
         ],
       ),
-      body: _buildHomeContent(),
+      body: _currentIndex == 0
+          ? _buildHomeContent()
+          : _currentIndex == 1
+              ? AccountSettingsScreen(
+                  key: const ValueKey('account_settings'),
+                  onUserInfoChanged: _loadCurrentUser,
+                )
+              : _currentIndex == 2
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.confirmation_number, size: 64, color: Color(0xFF00B388)),
+                          SizedBox(height: 16),
+                          Text('Your Tickets', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 8),
+                          Text('Ticket feature coming soon!'),
+                        ],
+                      ),
+                    )
+                  : _buildHomeContent(), // fallback
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == 1) {
-            _logout();
-          } else {
+        onTap: (index) async {
             setState(() {
               _currentIndex = index;
             });
-          }
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color(0xFF00B388),
@@ -356,8 +398,12 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'Logout',
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.confirmation_number),
+            label: 'Ticket',
           ),
         ],
       ),

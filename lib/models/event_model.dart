@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'news_model.dart';
 
 /// Represents a predefined event in the system
 class EventModel {
@@ -11,6 +12,7 @@ class EventModel {
   final String _location;
   final int _maxParticipants;
   final List<Map<String, dynamic>> _existingComments; // Now contains comment and rating
+  final List<NewsModel> _news;
 
   // Getters for encapsulation
   String get id => _id;
@@ -21,6 +23,7 @@ class EventModel {
   String get location => _location;
   int get maxParticipants => _maxParticipants;
   List<Map<String, dynamic>> get existingComments => List.unmodifiable(_existingComments);
+  List<NewsModel> get news => List.unmodifiable(_news);
 
   /// Get existing comments as strings
   List<String> get existingCommentTexts => _existingComments.map((c) => c['comment'] as String).toList();
@@ -51,6 +54,7 @@ class EventModel {
     required String location,
     required int maxParticipants,
     required List<Map<String, dynamic>> existingComments,
+    List<NewsModel>? news,
   })  : _id = id,
         _name = name,
         _description = description,
@@ -58,7 +62,8 @@ class EventModel {
         _date = date,
         _location = location,
         _maxParticipants = _validateMaxParticipants(maxParticipants),
-        _existingComments = existingComments;
+        _existingComments = existingComments,
+        _news = news ?? [];
 
   /// Validates max participants to ensure it's positive
   static int _validateMaxParticipants(int maxParticipants) {
@@ -78,6 +83,7 @@ class EventModel {
     String? location,
     int? maxParticipants,
     List<Map<String, dynamic>>? existingComments,
+    List<NewsModel>? news,
   }) {
     return EventModel(
       id: id ?? _id,
@@ -88,6 +94,7 @@ class EventModel {
       location: location ?? _location,
       maxParticipants: maxParticipants ?? _maxParticipants,
       existingComments: existingComments ?? _existingComments,
+      news: news ?? _news,
     );
   }
 
@@ -102,6 +109,7 @@ class EventModel {
       'location': _location,
       'maxParticipants': _maxParticipants,
       'existingComments': _existingComments,
+      'news': _news.map((n) => n.toMap()).toList(),
     };
   }
 
@@ -116,6 +124,9 @@ class EventModel {
       location: map['location'] as String,
       maxParticipants: map['maxParticipants'] as int,
       existingComments: List<Map<String, dynamic>>.from(map['existingComments'] ?? []),
+      news: map['news'] != null
+          ? List<NewsModel>.from((map['news'] as List).map((n) => NewsModel.fromMap(n)))
+          : [],
     );
   }
 
