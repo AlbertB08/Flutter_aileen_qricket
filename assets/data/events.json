@@ -25,7 +25,7 @@
           "date": "2024-06-01T10:00:00.000Z",
           "title": "Early Bird Registration Now Open!",
           "message": "Don't miss out on our early bird pricing! Register before July 31st and save 30% on your conference ticket. This year's event will feature keynote speakers from Google, Microsoft, and other tech giants. Early registration also includes exclusive access to pre-conference workshops and networking events.",
-          "image": "https://example.com/early-bird.jpg"
+          "image": "/Image/Tech.jpg"
         },
         {
           "date": "2024-06-01T14:00:00.000Z",
