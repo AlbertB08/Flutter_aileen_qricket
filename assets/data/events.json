@@ -117,7 +117,7 @@
           "date": "2024-06-01T09:00:00.000Z",
           "title": "Investment Panel Announced",
           "message": "Our investment panel for Business Summit 2024 is now complete! Featuring venture capitalists, angel investors, and successful entrepreneurs who will share insights on funding strategies, market analysis, and building scalable businesses. Don't miss this opportunity to learn from the best in the industry.",
-          "image": "https://example.com/investment-panel.jpg"
+          "image": "assets/images/1466e225-7104-42a9-9ab6-24a9ae4963a6.jpg"
         }
       ],
       "eventInfo": [
@@ -185,7 +185,7 @@
         {
           "layout": "image-top",
           "details": {
-            "image": "https://example.com/sports-top.jpg",
+            "image": "https://www.gl-events.com/sites/default/files/REFERENCES%202019/SEA%20GAMES%202019/SEA-GAMES-CORPS-2.jpg",
             "text": "Opening ceremony with special guests and live entertainment."
           }
         }
