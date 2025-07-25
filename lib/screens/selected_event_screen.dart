@@ -603,14 +603,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                   borderRadius: BorderRadius.circular(12),
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: Image.network(
-                      info.details['image'] ?? '',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image, color: Colors.white70),
-                      ),
-                    ),
+                    child: _buildFlexibleImage(info.details['image'], fit: BoxFit.cover),
                   ),
                 ),
               ),
@@ -645,14 +638,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                   borderRadius: BorderRadius.circular(12),
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: Image.network(
-                      info.details['image'] ?? '',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image, color: Colors.white70),
-                      ),
-                    ),
+                    child: _buildFlexibleImage(info.details['image'], fit: BoxFit.cover),
                   ),
                 ),
               ),
@@ -667,18 +653,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  info.details['image'] ?? '',
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: double.infinity,
-                    height: 160,
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.broken_image, color: Colors.white70),
-                  ),
-                ),
+                child: _buildFlexibleImage(info.details['image'], width: double.infinity, height: 160, fit: BoxFit.cover),
               ),
               const SizedBox(height: 12),
               Text(
@@ -707,18 +682,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                     itemBuilder: (context, index) {
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          images[index],
-                          width: double.infinity,
-                          height: 180,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            width: double.infinity,
-                            height: 180,
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.broken_image, color: Colors.white70),
-                          ),
-                        ),
+                        child: _buildFlexibleImage(images[index], width: double.infinity, height: 180, fit: BoxFit.cover),
                       );
                     },
                   ),
@@ -742,6 +706,44 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
         );
       default:
         return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildFlexibleImage(String? imagePath, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+    if (imagePath == null || imagePath.isEmpty) {
+      return Container(
+        width: width,
+        height: height,
+        color: Colors.grey[300],
+        child: const Icon(Icons.broken_image, color: Colors.white70),
+      );
+    }
+    if (imagePath.startsWith('http')) {
+      return Image.network(
+        imagePath,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: width,
+          height: height,
+          color: Colors.grey[300],
+          child: const Icon(Icons.broken_image, color: Colors.white70),
+        ),
+      );
+    } else {
+      return Image.asset(
+        imagePath,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: width,
+          height: height,
+          color: Colors.grey[300],
+          child: const Icon(Icons.broken_image, color: Colors.white70),
+        ),
+      );
     }
   }
 }

@@ -10,6 +10,8 @@ class TicketViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Generate a unique ticket ID based on event and user
+    final ticketId = 'TICKET-${event.id}-${user?.id ?? "unknown"}';
     return Scaffold(
       appBar: AppBar(title: const Text('Ticket Details')),
       body: Padding(
@@ -32,6 +34,8 @@ class TicketViewScreen extends StatelessWidget {
               Text('User: ${user?.name ?? "Unknown"}', style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 8),
               Text('User ID: ${user?.id ?? "Unknown"}', style: const TextStyle(fontSize: 16, color: Colors.grey)),
+              const SizedBox(height: 8),
+              Text('Ticket ID: $ticketId', style: const TextStyle(fontSize: 16, color: Colors.blue)),
             ],
           ),
         ),

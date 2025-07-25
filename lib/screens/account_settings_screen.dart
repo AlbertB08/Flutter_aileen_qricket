@@ -6,10 +6,13 @@ import '../models/user_model.dart';
 import 'login_screen.dart'; // Added import for LoginScreen
 import 'settings_screen.dart'; // Added import for SettingsScreen
 import 'dart:convert'; // Added import for jsonDecode
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   final VoidCallback? onUserInfoChanged;
-  const AccountSettingsScreen({Key? key, this.onUserInfoChanged}) : super(key: key);
+  final VoidCallback? onProfileUpdated;
+  const AccountSettingsScreen({Key? key, this.onUserInfoChanged, this.onProfileUpdated}) : super(key: key);
 
   @override
   _AccountSettingsScreenState createState() => _AccountSettingsScreenState();
@@ -26,6 +29,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   final _confirmPasswordController = TextEditingController();
   String? _passwordError;
   bool _isPasswordSaving = false;
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -51,6 +56,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     }
   }
 
+  Future<void> _pickProfileImage() async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _profileImage = File(picked.path);
+      });
+    }
+  }
+
   Future<void> _saveUserInfo() async {
     setState(() { _isSaving = true; });
     
@@ -59,6 +73,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       final updatedUser = currentUser.copyWith(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
+        profileImagePath: _profileImage?.path ?? currentUser.profileImagePath,
       );
       await AuthService.updateCurrentUser(updatedUser);
       
@@ -75,6 +90,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         const SnackBar(content: Text('Account info updated!')),
       );
       widget.onUserInfoChanged?.call();
+      widget.onProfileUpdated?.call();
     }
   }
 
@@ -222,6 +238,41 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Profile picture section
+                    Center(
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 48,
+                            backgroundColor: Colors.grey[300],
+                            backgroundImage: (_profileImage != null)
+                                ? FileImage(_profileImage!)
+                                : (AuthService.currentUser?.profileImagePath != null && AuthService.currentUser!.profileImagePath!.isNotEmpty)
+                                    ? FileImage(File(AuthService.currentUser!.profileImagePath!))
+                                    : null,
+                            child: (_profileImage == null && (AuthService.currentUser?.profileImagePath == null || AuthService.currentUser!.profileImagePath!.isEmpty))
+                                ? const Icon(Icons.person, size: 48, color: Colors.white)
+                                : null,
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: InkWell(
+                              onTap: _pickProfileImage,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Text(
                       'Name:', 
                       style: TextStyle(
@@ -625,35 +676,35 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.logout),
+                        label: const Text('Logout'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(48),
+                        ),
+                        onPressed: () async {
+                          // Log logout activity
+                          await AuthService.addActivityLog(
+                            'Logout',
+                            'User logged out from account settings',
+                          );
+                          await AuthService.logout();
+                          if (context.mounted) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              (route) => false,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(48),
-                ),
-                onPressed: () async {
-                  // Log logout activity
-                  await AuthService.addActivityLog(
-                    'Logout',
-                    'User logged out from account settings',
-                  );
-                  
-                  await AuthService.logout();
-                  if (context.mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      (route) => false,
-                    );
-                  }
-                },
               ),
             ),
           ],

@@ -13,6 +13,7 @@ import '../models/user_model.dart';
 import 'account_settings_screen.dart';
 import 'ticket_screen.dart';
 import 'dart:io';
+import 'notification_screen.dart';
 
 /// Main screen for event selection and navigation
 class EventSelectionScreen extends BaseScreen {
@@ -140,6 +141,11 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
       MaterialPageRoute(
         builder: (context) => AccountSettingsScreen(
           onUserInfoChanged: _loadCurrentUser,
+          onProfileUpdated: () {
+            setState(() {
+              _currentIndex = 3; // Switch to Account tab
+            });
+          },
         ),
       ),
     );
@@ -242,7 +248,31 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
       appBar: AppBar(
         title: Row(
           children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Text(
+                  'Q',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00B388),
+                  ),
+                ),
+              ),
+            ),
+            const Spacer(),
             if (_currentUser != null) ...[
+              Text(
+                _currentUser!.name,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              ),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: _navigateToAccountSettings,
                 child: CircleAvatar(
@@ -256,12 +286,7 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                       : null,
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                _currentUser!.name,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-              ),
-            ]
+            ],
           ],
         ),
         backgroundColor: const Color(0xFF00B388),
@@ -404,52 +429,31 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                       ],
                     ))
           : _currentIndex == 1
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.notifications, size: 64, color: Color(0xFF00B388)),
-                      const SizedBox(height: 16),
-                      const Text('Notifications', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      // Show notification items
-                      _buildNotificationItem(
-                        'Event Reminder',
-                        'Tech Conference 2024 starts in 2 days',
-                        '2 hours ago',
-                        Icons.event,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildNotificationItem(
-                        'New Event',
-                        'Art Exhibition registration is now open',
-                        '1 day ago',
-                        Icons.art_track,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildNotificationItem(
-                        'Event Update',
-                        'Music Festival lineup has been updated',
-                        '3 days ago',
-                        Icons.music_note,
-                      ),
-                    ],
-                  ),
-                )
-              : _currentIndex == 2
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.confirmation_number, size: 64, color: Color(0xFF00B388)),
-                          SizedBox(height: 16),
-                          Text('Your Tickets', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 8),
-                          Text('Ticket feature coming soon!'),
-                        ],
-                      ),
+              ? NotificationScreen()
+              : _currentIndex == 3
+                  ? AccountSettingsScreen(
+                      key: const ValueKey('account_settings'),
+                      onUserInfoChanged: _loadCurrentUser,
+                      onProfileUpdated: () {
+                        setState(() {
+                          _currentIndex = 3;
+                        });
+                      },
                     )
-                  : (_isLoading
+                  : _currentIndex == 2
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.confirmation_number, size: 64, color: Color(0xFF00B388)),
+                              SizedBox(height: 16),
+                              Text('Your Tickets', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text('Ticket feature coming soon!'),
+                            ],
+                          ),
+                        )
+                      : (_isLoading
           ? const Center(child: CircularProgressIndicator())
           : _events.isEmpty
               ? Center(
@@ -491,6 +495,8 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
         onTap: (index) {
           if (index == 2) {
             _navigateToTicketScreen();
+          } else if (index == 3) {
+            _navigateToAccountSettings();
           } else {
             setState(() {
               _currentIndex = index;

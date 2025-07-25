@@ -19,17 +19,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final _nameController = TextEditingController();
   bool _privacyChecked = false;
   String? _privacyPolicyText;
+  String? _termsText;
 
   @override
   void initState() {
     super.initState();
     _loadPrivacyPolicy();
+    _loadTerms();
   }
 
   Future<void> _loadPrivacyPolicy() async {
     final policy = await DefaultAssetBundle.of(context).loadString('assets/data/privacy_policy.txt');
     setState(() {
       _privacyPolicyText = policy;
+    });
+  }
+
+  Future<void> _loadTerms() async {
+    final terms = await DefaultAssetBundle.of(context).loadString('assets/data/terms_and_conditions.txt');
+    setState(() {
+      _termsText = terms;
     });
   }
 
@@ -46,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_privacyChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('You must agree to the privacy policy to continue.'),
+          content: Text('You must agree to the Privacy Policy and Terms and Conditions to continue.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -272,6 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // Privacy policy checkbox
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Checkbox(
@@ -306,6 +316,36 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               child: Text(
                                 'Privacy Policy',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                            const Text(' and '),
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Terms and Conditions'),
+                                    content: SizedBox(
+                                      width: 300,
+                                      child: SingleChildScrollView(
+                                        child: Text(_termsText ?? 'Loading...'),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        child: const Text('Close'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Terms and Conditions',
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.primary,
                                   decoration: TextDecoration.underline,
