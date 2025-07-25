@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../models/user_model.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class TicketViewScreen extends StatelessWidget {
   final EventModel event;
@@ -18,16 +19,10 @@ class TicketViewScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // QR code placeholder
-              Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
-                  child: Icon(Icons.qr_code, size: 120, color: Colors.black54),
-                ),
+              QrImageView(
+                data: 'event:${event.id};user:${user?.id ?? "unknown"}',
+                size: 200.0,
+                backgroundColor: Colors.white,
               ),
               const SizedBox(height: 24),
               Text('Event: ${event.name}', style: Theme.of(context).textTheme.titleMedium),

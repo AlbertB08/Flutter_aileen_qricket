@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'event_selection_screen.dart';
+import '../main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,21 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _isLogin = true; // Toggle between login and register
   final _nameController = TextEditingController();
+  bool _privacyChecked = false;
+  String? _privacyPolicyText;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrivacyPolicy();
+  }
+
+  Future<void> _loadPrivacyPolicy() async {
+    final policy = await DefaultAssetBundle.of(context).loadString('assets/data/privacy_policy.txt');
+    setState(() {
+      _privacyPolicyText = policy;
+    });
+  }
 
   @override
   void dispose() {
@@ -27,6 +43,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_privacyChecked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You must agree to the privacy policy to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -82,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = ThemeProvider.of(context);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -107,6 +133,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Dark mode toggle at the top
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+                            Switch(
+                              value: themeProvider.isDarkMode,
+                              onChanged: (_) => themeProvider.toggleTheme(),
+                            ),
+                          ],
+                        ),
                         // App Logo/Title
                         Container(
                           width: 80,
@@ -230,6 +267,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : 'Already have an account? Login',
                             style: const TextStyle(color: Color(0xFF00B388)),
                           ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Privacy policy checkbox
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Checkbox(
+                              value: _privacyChecked,
+                              onChanged: (val) {
+                                setState(() {
+                                  _privacyChecked = val ?? false;
+                                });
+                              },
+                            ),
+                            const Text('I agree to the '),
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Privacy Policy'),
+                                    content: SizedBox(
+                                      width: 300,
+                                      child: SingleChildScrollView(
+                                        child: Text(_privacyPolicyText ?? 'Loading...'),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        child: const Text('Close'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Privacy Policy',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

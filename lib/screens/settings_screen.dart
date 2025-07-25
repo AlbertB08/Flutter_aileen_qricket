@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
+import 'dart:io';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -52,10 +53,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _notificationsEnabled = value;
     });
     _saveSettings();
+    if (value) {
+      _requestNotificationPermission();
+      _showTestNotification();
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Notifications ${value ? 'enabled' : 'disabled'}'),
         duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _requestNotificationPermission() async {
+    // Placeholder: In a real app, use flutter_local_notifications or firebase_messaging
+    // For now, just show a dialog
+    if (Platform.isAndroid || Platform.isIOS) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Notification Permission'),
+          content: const Text('Notification permissions would be requested here.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _showTestNotification() {
+    // Placeholder: In a real app, use flutter_local_notifications or firebase_messaging
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Test notification: This is how a push notification would appear.'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

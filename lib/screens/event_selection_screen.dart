@@ -12,6 +12,7 @@ import 'login_screen.dart';
 import '../models/user_model.dart';
 import 'account_settings_screen.dart';
 import 'ticket_screen.dart';
+import 'dart:io';
 
 /// Main screen for event selection and navigation
 class EventSelectionScreen extends BaseScreen {
@@ -239,78 +240,34 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-            color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+        title: Row(
+          children: [
+            if (_currentUser != null) ...[
+              GestureDetector(
+                onTap: _navigateToAccountSettings,
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.grey[300],
+                  backgroundImage: (_currentUser?.profileImagePath != null && (_currentUser?.profileImagePath?.isNotEmpty ?? false))
+                      ? FileImage(File(_currentUser!.profileImagePath!))
+                      : null,
+                  child: (_currentUser?.profileImagePath == null || (_currentUser?.profileImagePath?.isEmpty ?? true))
+                      ? const Icon(Icons.person, color: Colors.white)
+                      : null,
+                ),
               ),
-              child: const Center(
-                child: Text(
-                  'Q',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                color: Color(0xFF00B388),
+              const SizedBox(width: 8),
+              Text(
+                _currentUser!.name,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
               ),
-            ),
-          ),
+            ]
+          ],
         ),
         backgroundColor: const Color(0xFF00B388),
         foregroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          if (_currentUser != null)
-            Row(
-              children: [
-                Text(
-                  _currentUser!.name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.account_circle),
-                  onPressed: _navigateToAccountSettings,
-                  tooltip: 'Account',
-                ),
-                // Notification Icon with Badge
-                Stack(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.notifications),
-                      onPressed: _showNotifications,
-                      tooltip: 'Notifications',
-                    ),
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child: Text(
-                          '3',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-        ],
+        actions: [],
       ),
       body: _currentIndex == 0
           ? (_isLoading
@@ -447,9 +404,37 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                       ],
                     ))
           : _currentIndex == 1
-              ? AccountSettingsScreen(
-                  key: const ValueKey('account_settings'),
-                  onUserInfoChanged: _loadCurrentUser,
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.notifications, size: 64, color: Color(0xFF00B388)),
+                      const SizedBox(height: 16),
+                      const Text('Notifications', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      // Show notification items
+                      _buildNotificationItem(
+                        'Event Reminder',
+                        'Tech Conference 2024 starts in 2 days',
+                        '2 hours ago',
+                        Icons.event,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotificationItem(
+                        'New Event',
+                        'Art Exhibition registration is now open',
+                        '1 day ago',
+                        Icons.art_track,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildNotificationItem(
+                        'Event Update',
+                        'Music Festival lineup has been updated',
+                        '3 days ago',
+                        Icons.music_note,
+                      ),
+                    ],
+                  ),
                 )
               : _currentIndex == 2
                   ? Center(
@@ -521,12 +506,16 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
+            icon: Icon(Icons.notifications),
+            label: 'Notification',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.confirmation_number),
             label: 'Ticket',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
           ),
         ],
       ),

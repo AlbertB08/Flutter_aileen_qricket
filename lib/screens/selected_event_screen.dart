@@ -92,12 +92,12 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Image placeholder
                       Container(
                         width: 120,
-                        height: 120,
+                        height: 150,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(12),
@@ -199,6 +199,8 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                       SingleChildScrollView(
                         child: Column(
                           children: [
+                            // Render eventInfo sections above comments/feedback
+                            ...widget.selectedEvent.eventInfo.map((info) => _buildEventInfoSection(info)).toList(),
                             _buildStatistics(),
                             // Add feedback prompt section - only show if no user feedback and participated
                             if (!hasUserFeedback && _userParticipatedInEvent) _buildAddFeedbackPrompt(),
@@ -584,6 +586,162 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
         hideLoading();
         showError('Failed to delete feedback: $e');
       }
+    }
+  }
+
+  Widget _buildEventInfoSection(EventInfoSection info) {
+    switch (info.layout) {
+      case 'image-left':
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 9,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.network(
+                      info.details['image'] ?? '',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image, color: Colors.white70),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 11,
+                child: Text(
+                  info.details['text'] ?? '',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+        );
+      case 'image-right':
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 11,
+                child: Text(
+                  info.details['text'] ?? '',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 9,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.network(
+                      info.details['image'] ?? '',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image, color: Colors.white70),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      case 'image-top':
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  info.details['image'] ?? '',
+                  width: double.infinity,
+                  height: 160,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: double.infinity,
+                    height: 160,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image, color: Colors.white70),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                info.details['text'] ?? '',
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      case 'carousel-only':
+        final List images = info.details['images'] ?? [];
+        final PageController _carouselController = PageController();
+        int _carouselIndex = 0;
+        return StatefulBuilder(
+          builder: (context, setState) => Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 180,
+                  child: PageView.builder(
+                    controller: _carouselController,
+                    itemCount: images.length,
+                    onPageChanged: (index) => setState(() => _carouselIndex = index),
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          images[index],
+                          width: double.infinity,
+                          height: 180,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: double.infinity,
+                            height: 180,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.broken_image, color: Colors.white70),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(images.length, (index) => Container(
+                    width: 8,
+                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _carouselIndex == index ? Colors.blueAccent : Colors.grey[400],
+                    ),
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+      default:
+        return const SizedBox.shrink();
     }
   }
 }

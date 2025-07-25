@@ -39,6 +39,7 @@ class User {
   final String password;
   final List<String> participatedEventIds;
   final List<ActivityLogEntry> activityLog;
+  final String? profileImagePath;
 
   User({
     required this.id,
@@ -47,6 +48,7 @@ class User {
     required this.password,
     required this.participatedEventIds,
     required this.activityLog,
+    this.profileImagePath,
   });
 
   Map<String, dynamic> toJson() {
@@ -57,6 +59,7 @@ class User {
       'password': password,
       'participatedEventIds': participatedEventIds,
       'activityLog': activityLog.map((entry) => entry.toJson()).toList(),
+      'profileImagePath': profileImagePath,
     };
   }
 
@@ -70,6 +73,7 @@ class User {
       activityLog: (json['activityLog'] as List)
           .map((entry) => ActivityLogEntry.fromJson(entry))
           .toList(),
+      profileImagePath: json['profileImagePath'],
     );
   }
 
@@ -80,6 +84,7 @@ class User {
     String? password,
     List<String>? participatedEventIds,
     List<ActivityLogEntry>? activityLog,
+    String? profileImagePath,
   }) {
     return User(
       id: id ?? this.id,
@@ -88,6 +93,7 @@ class User {
       password: password ?? this.password,
       participatedEventIds: participatedEventIds ?? this.participatedEventIds,
       activityLog: activityLog ?? this.activityLog,
+      profileImagePath: profileImagePath ?? this.profileImagePath,
     );
   }
 } 

@@ -3,6 +3,20 @@ import 'dart:math';
 import 'news_model.dart';
 
 /// Represents a predefined event in the system
+class EventInfoSection {
+  final String layout;
+  final Map<String, dynamic> details;
+
+  EventInfoSection({required this.layout, required this.details});
+
+  factory EventInfoSection.fromMap(Map<String, dynamic> map) {
+    return EventInfoSection(
+      layout: map['layout'] as String,
+      details: Map<String, dynamic>.from(map['details'] as Map),
+    );
+  }
+}
+
 class EventModel {
   final String _id;
   final String _name;
@@ -13,6 +27,7 @@ class EventModel {
   final int _maxParticipants;
   final List<Map<String, dynamic>> _existingComments; // Now contains comment and rating
   final List<NewsModel> _news;
+  final List<EventInfoSection> _eventInfo;
 
   // Getters for encapsulation
   String get id => _id;
@@ -24,6 +39,7 @@ class EventModel {
   int get maxParticipants => _maxParticipants;
   List<Map<String, dynamic>> get existingComments => List.unmodifiable(_existingComments);
   List<NewsModel> get news => List.unmodifiable(_news);
+  List<EventInfoSection> get eventInfo => List.unmodifiable(_eventInfo);
 
   /// Get existing comments as strings
   List<String> get existingCommentTexts => _existingComments.map((c) => c['comment'] as String).toList();
@@ -55,6 +71,7 @@ class EventModel {
     required int maxParticipants,
     required List<Map<String, dynamic>> existingComments,
     List<NewsModel>? news,
+    List<EventInfoSection>? eventInfo,
   })  : _id = id,
         _name = name,
         _description = description,
@@ -63,7 +80,8 @@ class EventModel {
         _location = location,
         _maxParticipants = _validateMaxParticipants(maxParticipants),
         _existingComments = existingComments,
-        _news = news ?? [];
+        _news = news ?? [],
+        _eventInfo = eventInfo ?? [];
 
   /// Validates max participants to ensure it's positive
   static int _validateMaxParticipants(int maxParticipants) {
@@ -84,6 +102,7 @@ class EventModel {
     int? maxParticipants,
     List<Map<String, dynamic>>? existingComments,
     List<NewsModel>? news,
+    List<EventInfoSection>? eventInfo,
   }) {
     return EventModel(
       id: id ?? _id,
@@ -95,6 +114,7 @@ class EventModel {
       maxParticipants: maxParticipants ?? _maxParticipants,
       existingComments: existingComments ?? _existingComments,
       news: news ?? _news,
+      eventInfo: eventInfo ?? _eventInfo,
     );
   }
 
@@ -110,6 +130,7 @@ class EventModel {
       'maxParticipants': _maxParticipants,
       'existingComments': _existingComments,
       'news': _news.map((n) => n.toMap()).toList(),
+      'eventInfo': _eventInfo.map((e) => {'layout': e.layout, 'details': e.details}).toList(),
     };
   }
 
@@ -126,6 +147,9 @@ class EventModel {
       existingComments: List<Map<String, dynamic>>.from(map['existingComments'] ?? []),
       news: map['news'] != null
           ? List<NewsModel>.from((map['news'] as List).map((n) => NewsModel.fromMap(n)))
+          : [],
+      eventInfo: map['eventInfo'] != null
+          ? List<EventInfoSection>.from((map['eventInfo'] as List).map((e) => EventInfoSection.fromMap(e)))
           : [],
     );
   }

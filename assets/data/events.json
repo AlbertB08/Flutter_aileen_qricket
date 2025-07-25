@@ -33,6 +33,15 @@
           "message": "We're excited to announce additional speakers for Tech Conference 2024! Joining our lineup are AI experts from OpenAI, cybersecurity specialists from leading firms, and startup founders sharing their success stories. The complete speaker list will be available next week.",
           "image": "https://example.com/speakers.jpg"
         }
+      ],
+      "eventInfo": [
+        {
+          "layout": "image-left",
+          "details": {
+            "image": "https://example.com/event-info.jpg",
+            "text": "This year’s Tech Conference is packed with activities, including panel discussions, coding bootcamps, and networking lounges designed to connect professionals in tech."
+          }
+        }
       ]
     },
     {
@@ -61,6 +70,25 @@
           "title": "Lineup Revealed!",
           "message": "The complete lineup for Music Festival 2024 has been revealed! Headliners include international stars and local favorites. From rock to pop, EDM to acoustic, there's something for every music lover. VIP packages are selling fast - secure your spot today!",
           "image": "https://example.com/lineup.jpg"
+        }
+      ],
+      "eventInfo": [
+        {
+          "layout": "image-right",
+          "details": {
+            "image": "https://example.com/music-info.jpg",
+            "text": "Enjoy live performances on multiple stages, food trucks, and art installations. Don’t miss the after-party with top DJs!"
+          }
+        },
+        {
+          "layout": "carousel-only",
+          "details": {
+            "images": [
+              "https://example.com/music-carousel1.jpg",
+              "https://example.com/music-carousel2.jpg",
+              "https://example.com/music-carousel3.jpg"
+            ]
+          }
         }
       ]
     },
@@ -91,6 +119,29 @@
           "message": "Our investment panel for Business Summit 2024 is now complete! Featuring venture capitalists, angel investors, and successful entrepreneurs who will share insights on funding strategies, market analysis, and building scalable businesses. Don't miss this opportunity to learn from the best in the industry.",
           "image": "https://example.com/investment-panel.jpg"
         }
+      ],
+      "eventInfo": [
+        {
+          "layout": "image-top",
+          "details": {
+            "image": "https://example.com/business-top.jpg",
+            "text": "Keynote sessions from industry leaders, interactive workshops, and networking opportunities for entrepreneurs."
+          }
+        },
+        {
+          "layout": "image-left",
+          "details": {
+            "image": "https://example.com/business-left.jpg",
+            "text": "Panel discussions on investment strategies and market trends."
+          }
+        },
+        {
+          "layout": "image-right",
+          "details": {
+            "image": "https://example.com/business-right.jpg",
+            "text": "Startup pitch competition with prizes for the best business ideas."
+          }
+        }
       ]
     },
     {
@@ -120,6 +171,24 @@
           "message": "Due to popular demand, we've extended the registration deadline for Sports Tournament 2024! You now have until August 15th to register your team. New categories have been added including mixed doubles for badminton and 3x3 basketball. Early registrants get free tournament t-shirts!",
           "image": "https://example.com/registration.jpg"
         }
+      ],
+      "eventInfo": [
+        {
+          "layout": "carousel-only",
+          "details": {
+            "images": [
+              "https://example.com/sports-carousel1.jpg",
+              "https://example.com/sports-carousel2.jpg"
+            ]
+          }
+        },
+        {
+          "layout": "image-top",
+          "details": {
+            "image": "https://example.com/sports-top.jpg",
+            "text": "Opening ceremony with special guests and live entertainment."
+          }
+        }
       ]
     },
     {
@@ -148,6 +217,22 @@
           "title": "Featured Artists Announced",
           "message": "We're thrilled to announce the featured artists for Art Exhibition 2024! The exhibition will showcase works from both established and emerging artists, including international guests making their Philippine debut. Special guided tours will be available for art enthusiasts and collectors.",
           "image": "https://example.com/artists.jpg"
+        }
+      ],
+      "eventInfo": [
+        {
+          "layout": "image-right",
+          "details": {
+            "image": "https://example.com/art-right.jpg",
+            "text": "Explore contemporary artworks and meet the artists behind the masterpieces."
+          }
+        },
+        {
+          "layout": "image-top",
+          "details": {
+            "image": "https://example.com/art-top.jpg",
+            "text": "Workshops and live painting sessions throughout the exhibition."
+          }
         }
       ]
     }
