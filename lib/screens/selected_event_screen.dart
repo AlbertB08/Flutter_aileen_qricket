@@ -10,6 +10,9 @@ import 'base_screen.dart';
 import '../services/storage_service.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
+import 'ticket_purchase_screen.dart';
+import '../models/invoice_model.dart';
+import '../services/invoice_service.dart';
 
 class SelectedEventScreen extends BaseScreen {
   final EventModel selectedEvent;
@@ -32,6 +35,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
   String? _userId;
   User? _currentUser;
   late TabController _tabController;
+  bool _isEventSaved = false;
 
   @override
   void initState() {
@@ -50,6 +54,71 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
     _userId = await SharedPreferencesStorageService.getOrCreateUserId();
     _currentUser = AuthService.currentUser;
     await _loadData();
+    _checkIfEventSaved();
+  }
+
+  void _checkIfEventSaved() {
+    if (_currentUser != null) {
+      setState(() {
+        _isEventSaved = _currentUser!.bookmarkedEventIds.contains(widget.selectedEvent.id);
+      });
+    }
+  }
+
+  Future<void> _buyTicket() async {
+    if (_currentUser == null) return;
+    
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TicketPurchaseScreen(
+          event: widget.selectedEvent,
+          user: _currentUser!,
+        ),
+      ),
+    );
+    
+    // Refresh user data after returning from ticket purchase
+    if (result == true) {
+      // Purchase was successful, refresh user data
+      _currentUser = AuthService.currentUser;
+      setState(() {});
+      
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ticket purchased successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _toggleSaveEvent() async {
+    if (_currentUser == null) return;
+    
+    final updatedBookmarks = List<String>.from(_currentUser!.bookmarkedEventIds);
+    if (_isEventSaved) {
+      updatedBookmarks.remove(widget.selectedEvent.id);
+    } else {
+      updatedBookmarks.add(widget.selectedEvent.id);
+    }
+    
+    final updatedUser = _currentUser!.copyWith(bookmarkedEventIds: updatedBookmarks);
+    await AuthService.updateCurrentUser(updatedUser);
+    
+    setState(() {
+      _currentUser = updatedUser;
+      _isEventSaved = !_isEventSaved;
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(_isEventSaved ? 'Event saved!' : 'Event removed from saved'),
+        backgroundColor: _isEventSaved ? Colors.green : Colors.orange,
+      ),
+    );
   }
 
   Future<void> _loadData() async {
@@ -82,25 +151,75 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.selectedEvent.name),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: const Color(0xFF00B388),
+        foregroundColor: Colors.white,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // Top: Event image and summary
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                // Top: Event image, summary, and action buttons
+                SizedBox(
+                  height: 300,
+                  width: double.infinity,
+                  child: Stack(
                     children: [
-                      // Image placeholder
+                      // Grayscale thumbnail background (full cover)
+                      if (widget.selectedEvent.thumbnail != null && widget.selectedEvent.thumbnail!.isNotEmpty)
+                        Positioned.fill(
+                          child: ColorFiltered(
+                            colorFilter: const ColorFilter.matrix([
+                              0.2126, 0.7152, 0.0722, 0, 0,
+                              0.2126, 0.7152, 0.0722, 0, 0,
+                              0.2126, 0.7152, 0.0722, 0, 0,
+                              0, 0, 0, 1, 0,
+                            ]),
+                            child: widget.selectedEvent.thumbnail!.startsWith('http')
+                                ? Image.network(
+                                    widget.selectedEvent.thumbnail!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  )
+                                : Image.asset(
+                                    widget.selectedEvent.thumbnail!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                          ),
+                        ),
+                      // Black overlay for readability
+                      Positioned.fill(
+                        child: Container(
+                          color: Colors.black.withOpacity(0.45),
+                        ),
+                      ),
+                      // Foreground content centered vertically
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                                // Poster image with white border
+                                if (widget.selectedEvent.poster != null && widget.selectedEvent.poster!.isNotEmpty)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white, width: 4),
+                                    ),
+                                    child: _buildEventImage(),
+                                  )
+                                else if (widget.selectedEvent.thumbnail != null && widget.selectedEvent.thumbnail!.isNotEmpty)
+                                  _buildEventImage()
+                                else
                       Container(
                         width: 120,
-                        height: 150,
+                                    height: 150,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Center(
                           child: Text(
@@ -115,12 +234,13 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               widget.selectedEvent.name,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                             ),
-                            Text('Event ID: ${widget.selectedEvent.id}', style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+                                      Text('Event ID: ${widget.selectedEvent.id}', style: TextStyle(fontSize: 10, color: Colors.grey[300])),
                             const SizedBox(height: 4),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -136,49 +256,106 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                             const SizedBox(height: 8),
                             Text(
                               widget.selectedEvent.description,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[200]),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+                                          Icon(Icons.calendar_today, size: 16, color: Colors.grey[200]),
                                 const SizedBox(width: 4),
-                                Text(widget.selectedEvent.formattedDate, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                                          Text(widget.selectedEvent.formattedDate, style: TextStyle(fontSize: 14, color: Colors.grey[200])),
                                 const SizedBox(width: 16),
-                                Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                                          Icon(Icons.access_time, size: 16, color: Colors.grey[200]),
                                 const SizedBox(width: 4),
-                                Text(widget.selectedEvent.formattedTime, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                                          Text(widget.selectedEvent.formattedTime, style: TextStyle(fontSize: 14, color: Colors.grey[200])),
                               ],
                             ),
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                                          Icon(Icons.location_on, size: 16, color: Colors.grey[200]),
                                 const SizedBox(width: 4),
                                 Expanded(
-                                  child: Text(widget.selectedEvent.location, style: TextStyle(fontSize: 14, color: Colors.grey[600]), overflow: TextOverflow.ellipsis),
+                                            child: Text(widget.selectedEvent.location, style: TextStyle(fontSize: 14, color: Colors.grey[200]), overflow: TextOverflow.ellipsis),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.people, size: 16, color: Colors.grey[600]),
+                                          Icon(Icons.people, size: 16, color: Colors.grey[200]),
                                 const SizedBox(width: 4),
-                                Text('${widget.selectedEvent.maxParticipants} max participants', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                                          Text('${widget.selectedEvent.maxParticipants} max participants', style: TextStyle(fontSize: 14, color: Colors.grey[200])),
                               ],
                             ),
                           ],
                         ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Action Buttons (Buy Ticket, Save Event)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                // Buy Ticket Button
+                                if (!widget.selectedEvent.isPast && !_userParticipatedInEvent && _currentUser != null)
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => _buyTicket(),
+                                      icon: const Icon(Icons.confirmation_number),
+                                      label: const Text('Buy Ticket'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF00B388),
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (!widget.selectedEvent.isPast && !_userParticipatedInEvent && _currentUser != null)
+                                  const SizedBox(width: 12),
+                                // Save Event Button
+                                if (_currentUser != null)
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => _toggleSaveEvent(),
+                                      icon: Icon(
+                                        _isEventSaved ? Icons.bookmark : Icons.bookmark_border,
+                                        color: _isEventSaved ? Colors.orange : Colors.grey[700],
+                                      ),
+                                      label: Text(
+                                        _isEventSaved ? 'Saved' : 'Save Event',
+                                        style: TextStyle(
+                                          color: _isEventSaved ? Colors.orange : Colors.grey[700],
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey[100],
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
                 // Tabs
                 Container(
-                  color: Colors.brown[700],
+                  color: const Color(0xFF006400),
                   child: TabBar(
                     controller: _tabController,
                     indicatorColor: Colors.white,
@@ -201,39 +378,69 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                           children: [
                             // Render eventInfo sections above comments/feedback
                             ...widget.selectedEvent.eventInfo.map((info) => _buildEventInfoSection(info)).toList(),
-                            _buildStatistics(),
+                            // Only show statistics for participated events
+                            if (_userParticipatedInEvent && widget.selectedEvent.isPast) _buildStatistics(),
+                            // Only show feedback sections if user participated in the event AND event is past
+                            if (_userParticipatedInEvent && widget.selectedEvent.isPast) ...[
                             // Add feedback prompt section - only show if no user feedback and participated
-                            if (!hasUserFeedback && _userParticipatedInEvent) _buildAddFeedbackPrompt(),
-                            if (!hasUserFeedback && !_userParticipatedInEvent)
+                              if (!hasUserFeedback) _buildAddFeedbackPrompt(),
+                              // Existing comments section - only visible for participated events
+                              _buildExistingCommentsSection(),
+                              // User feedback section - only visible for participated events
+                              if (hasUserFeedback) ...[
+                                const SizedBox(height: 16),
+                                _buildUserFeedbackSection(),
+                              ],
+                            ] else if (_userParticipatedInEvent && !widget.selectedEvent.isPast) ...[
+                              // Show message for participated but upcoming events
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.blue.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                                    border: Border.all(color: Colors.blue.withOpacity(0.3)),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.info_outline, color: Colors.grey[700]),
+                                      Icon(Icons.schedule, color: Colors.blue[700]),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          'You can only add feedback for events you have participated in.',
-                                          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                          'Feedback will be available after the event ends.',
+                                          style: TextStyle(fontSize: 14, color: Colors.blue[700]),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            // Existing comments section - always visible
-                            _buildExistingCommentsSection(),
-                            // User feedback section
-                            if (hasUserFeedback) ...[
-                              const SizedBox(height: 16),
-                              _buildUserFeedbackSection(),
+                            ] else ...[
+                              // Show message for non-participated events
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.info_outline, color: Colors.orange[700]),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'You can only view and add feedback for events you have participated in.',
+                                          style: TextStyle(fontSize: 14, color: Colors.orange[700]),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ],
                         ),
@@ -285,11 +492,8 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Statistics for ${widget.selectedEvent.name}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
+            // Removed statistics title
+            const SizedBox(height: 0),
             Row(
               children: [
                 Expanded(
@@ -599,12 +803,9 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
             children: [
               Expanded(
                 flex: 9,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: _buildFlexibleImage(info.details['image'], fit: BoxFit.cover),
-                  ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: _buildFlexibleImage(info.details['image'], fit: BoxFit.cover),
                 ),
               ),
               const SizedBox(width: 16),
@@ -634,12 +835,9 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
               const SizedBox(width: 16),
               Expanded(
                 flex: 9,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: _buildFlexibleImage(info.details['image'], fit: BoxFit.cover),
-                  ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: _buildFlexibleImage(info.details['image'], fit: BoxFit.cover),
                 ),
               ),
             ],
@@ -651,10 +849,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: _buildFlexibleImage(info.details['image'], width: double.infinity, height: 160, fit: BoxFit.cover),
-              ),
+              _buildFlexibleImage(info.details['image'], width: double.infinity, height: 160, fit: BoxFit.cover),
               const SizedBox(height: 12),
               Text(
                 info.details['text'] ?? '',
@@ -680,10 +875,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                     itemCount: images.length,
                     onPageChanged: (index) => setState(() => _carouselIndex = index),
                     itemBuilder: (context, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: _buildFlexibleImage(images[index], width: double.infinity, height: 180, fit: BoxFit.cover),
-                      );
+                      return _buildFlexibleImage(images[index], width: double.infinity, height: 180, fit: BoxFit.cover);
                     },
                   ),
                 ),
@@ -742,6 +934,130 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
           height: height,
           color: Colors.grey[300],
           child: const Icon(Icons.broken_image, color: Colors.white70),
+        ),
+      );
+    }
+  }
+
+  Widget _buildEventImage() {
+    if (widget.selectedEvent.poster != null && widget.selectedEvent.poster!.isNotEmpty) {
+      // Prioritize poster for event detail view
+      if (widget.selectedEvent.poster!.startsWith('http')) {
+        return Image.network(
+          widget.selectedEvent.poster!,
+          width: 120,
+          height: 150,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: 120,
+              height: 150,
+              color: Colors.grey[200],
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 120,
+            height: 150,
+            color: Colors.grey[300],
+            child: const Center(
+              child: Text(
+                'PLACEHOLDER',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      } else {
+        return Image.asset(
+          widget.selectedEvent.poster!,
+          width: 120,
+          height: 150,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 120,
+            height: 150,
+            color: Colors.grey[300],
+            child: const Center(
+              child: Text(
+                'PLACEHOLDER',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      }
+    } else if (widget.selectedEvent.thumbnail != null && widget.selectedEvent.thumbnail!.isNotEmpty) {
+      // Fallback to thumbnail if poster is not available
+      if (widget.selectedEvent.thumbnail!.startsWith('http')) {
+        return Image.network(
+          widget.selectedEvent.thumbnail!,
+          width: 120,
+          height: 150,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: 120,
+              height: 150,
+              color: Colors.grey[200],
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 120,
+            height: 150,
+            color: Colors.grey[300],
+            child: const Center(
+              child: Text(
+                'PLACEHOLDER',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      } else {
+        return Image.asset(
+          widget.selectedEvent.thumbnail!,
+          width: 120,
+          height: 150,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 120,
+            height: 150,
+            color: Colors.grey[300],
+            child: const Center(
+              child: Text(
+                'PLACEHOLDER',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      }
+    } else {
+      return Container(
+        width: 120,
+        height: 150,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(
+          child: Text(
+            'PLACEHOLDER',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -817,8 +1133,24 @@ class _FacebookStyleNewsCardState extends State<_FacebookStyleNewsCard> {
               bottomRight: Radius.circular(12),
             ),
             child: widget.news.image.isNotEmpty
-                ? Image.network(
-                    widget.news.image,
+                ? _buildNewsImage(widget.news.image)
+                : Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image, size: 60, color: Colors.white70),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNewsImage(String imagePath) {
+    // Check if it's a network URL or local asset
+    if (imagePath.startsWith('http')) {
+      return Image.network(
+        imagePath,
                     width: double.infinity,
                     height: 180,
                     fit: BoxFit.cover,
@@ -828,16 +1160,20 @@ class _FacebookStyleNewsCardState extends State<_FacebookStyleNewsCard> {
                       color: Colors.grey[300],
                       child: const Icon(Icons.broken_image, size: 60, color: Colors.white70),
                     ),
-                  )
-                : Container(
+      );
+    } else {
+      return Image.asset(
+        imagePath,
+        width: double.infinity,
+        height: 180,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
                     width: double.infinity,
                     height: 180,
                     color: Colors.grey[300],
-                    child: const Icon(Icons.image, size: 60, color: Colors.white70),
-                  ),
-          ),
-        ],
+          child: const Icon(Icons.broken_image, size: 60, color: Colors.white70),
       ),
     );
+    }
   }
 } 

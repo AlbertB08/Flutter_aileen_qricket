@@ -4,6 +4,7 @@ import '../models/feedback_model.dart';
 import '../services/event_service.dart';
 import '../services/feedback_service.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/event_card.dart';
 import 'selected_event_screen.dart';
 import 'base_screen.dart';
@@ -14,6 +15,7 @@ import 'account_settings_screen.dart';
 import 'ticket_screen.dart';
 import 'dart:io';
 import 'notification_screen.dart';
+import 'saved_events_screen.dart';
 
 /// Main screen for event selection and navigation
 class EventSelectionScreen extends BaseScreen {
@@ -42,7 +44,7 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
   String _searchQuery = '';
   String? _selectedCategory;
   List<String> _categories = [];
-  String _sortOption = 'Default';
+  String _sortOption = 'DateNewest';
 
   @override
   void initState() {
@@ -50,6 +52,44 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
     _initAndLoadData();
     _loadCurrentUser();
     _loadCategories();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh user data when dependencies change (e.g., when returning from ticket purchase)
+    _loadCurrentUser();
+  }
+
+  @override
+  Future<void> refresh() async {
+    print('EventSelectionScreen: Refreshing data...');
+    await _loadCurrentUser();
+    await _loadData();
+    setState(() {});
+    print('EventSelectionScreen: Refresh completed');
+  }
+
+  ImageProvider? _getProfileImageProvider() {
+    final user = _currentUser;
+    if (user?.profileImagePath != null && user!.profileImagePath!.isNotEmpty) {
+      final path = user.profileImagePath!;
+      
+      // Check if it's a network URL
+      if (path.startsWith('http')) {
+        return NetworkImage(path);
+      }
+      
+      // Check if it's a local file
+      if (path.startsWith('/') || path.contains('\\')) {
+        return FileImage(File(path));
+      }
+      
+      // Assume it's an asset
+      return AssetImage(path);
+    }
+    
+    return null;
   }
 
   Future<void> _loadCategories() async {
@@ -114,6 +154,11 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
       _events = _eventService.events;
       _feedbackList = _feedbackService.feedbacks;
       
+      // Generate notifications for current user
+      if (_currentUser != null) {
+        await NotificationService.generateNotificationsForUser(_currentUser!, _events);
+      }
+      
       hideLoading();
       setState(() {
         _isLoading = false;
@@ -126,12 +171,14 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
 
   /// Navigate to feedback screen for selected event
   void _navigateToEventFeedback(EventModel event) async {
-    await Navigator.of(context).push(
+    final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => SelectedEventScreen(selectedEvent: event),
       ),
     );
-    // Always reload data and update state after returning
+    
+    // Refresh user data and reload screen after returning
+    await _loadCurrentUser();
     await _loadData();
     setState(() {});
   }
@@ -252,7 +299,7 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Colors.white,
+            color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Center(
@@ -261,15 +308,15 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF00B388),
-                  ),
-                ),
+                color: Color(0xFF00B388),
               ),
+            ),
+          ),
             ),
             const Spacer(),
             if (_currentUser != null) ...[
               Text(
-                _currentUser!.name,
+                '${_currentUser!.fname} ${_currentUser!.lname}',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
               ),
               const SizedBox(width: 8),
@@ -278,10 +325,8 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                 child: CircleAvatar(
                   radius: 18,
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: (_currentUser?.profileImagePath != null && (_currentUser?.profileImagePath?.isNotEmpty ?? false))
-                      ? FileImage(File(_currentUser!.profileImagePath!))
-                      : null,
-                  child: (_currentUser?.profileImagePath == null || (_currentUser?.profileImagePath?.isEmpty ?? true))
+                  backgroundImage: _getProfileImageProvider(),
+                  child: _getProfileImageProvider() == null
                       ? const Icon(Icons.person, color: Colors.white)
                       : null,
                 ),
@@ -292,7 +337,19 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
         backgroundColor: const Color(0xFF00B388),
         foregroundColor: Colors.white,
         elevation: 0,
-        actions: [],
+        actions: [
+                IconButton(
+            icon: const Icon(Icons.bookmark),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SavedEventsScreen(),
+                        ),
+              );
+            },
+            tooltip: 'Saved Events',
+            ),
+        ],
       ),
       body: _currentIndex == 0
           ? (_isLoading
@@ -409,19 +466,48 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                               if (filtered.isEmpty) {
                                 return const Center(child: Text('No events found.'));
                               }
-                              return ListView.builder(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                itemCount: filtered.length,
-                                itemBuilder: (context, index) {
-                                  final event = filtered[index];
-                                  final participated = _currentUser?.participatedEventIds.contains(event.id) ?? false;
-                                  return EventCard(
-                                    event: event,
-                                    feedbackList: _feedbackList,
-                                    onTap: () => _navigateToEventFeedback(event),
-                                    participated: participated,
-                                  );
+                              return RefreshIndicator(
+                                onRefresh: () async {
+                                  await _loadData();
+                                  setState(() {});
                                 },
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  itemCount: filtered.length,
+                                  itemBuilder: (context, index) {
+                                    final event = filtered[index];
+                                    final participated = _currentUser?.participatedEventIds.contains(event.id) ?? false;
+                                    final isBookmarked = _currentUser?.bookmarkedEventIds.contains(event.id) ?? false;
+                                    return EventCard(
+                                      event: event,
+                                      feedbackList: _feedbackList,
+                                      onTap: () => _navigateToEventFeedback(event),
+                                      participated: participated,
+                                      isBookmarked: isBookmarked,
+                                      user: _currentUser,
+                                      onBookmark: () async {
+                                        if (_currentUser == null) return;
+                                        final updatedBookmarks = List<String>.from(_currentUser!.bookmarkedEventIds);
+                                        if (isBookmarked) {
+                                          updatedBookmarks.remove(event.id);
+                                        } else {
+                                          updatedBookmarks.add(event.id);
+                                        }
+                                        final updatedUser = _currentUser!.copyWith(bookmarkedEventIds: updatedBookmarks);
+                                        await AuthService.updateCurrentUser(updatedUser);
+                                        setState(() {
+                                          _currentUser = updatedUser;
+                                        });
+                                      },
+                                      onRefresh: () async {
+                                        // Refresh user data and reload screen
+                                        await _loadCurrentUser();
+                                        await _loadData();
+                                        setState(() {});
+                                      },
+                                    );
+                                  },
+                                ),
                               );
                             },
                           ),
@@ -430,76 +516,37 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
                     ))
           : _currentIndex == 1
               ? NotificationScreen()
-              : _currentIndex == 3
-                  ? AccountSettingsScreen(
-                      key: const ValueKey('account_settings'),
-                      onUserInfoChanged: _loadCurrentUser,
-                      onProfileUpdated: () {
-                        setState(() {
-                          _currentIndex = 3;
-                        });
-                      },
-                    )
-                  : _currentIndex == 2
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.confirmation_number, size: 64, color: Color(0xFF00B388)),
-                              SizedBox(height: 16),
-                              Text('Your Tickets', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                              SizedBox(height: 8),
-                              Text('Ticket feature coming soon!'),
-                            ],
-                          ),
-                        )
-                      : (_isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _events.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.event_busy,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No events available',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: _events.length,
-                  itemBuilder: (context, index) {
-                    final event = _events[index];
-                    final participated = _currentUser?.participatedEventIds.contains(event.id) ?? false;
-                    return EventCard(
-                      event: event,
-                      feedbackList: _feedbackList,
-                      onTap: () => _navigateToEventFeedback(event),
-                      participated: participated,
-                    );
+              : _currentIndex == 2
+                  ? _buildTicketTab()
+                  : _currentIndex == 3
+              ? AccountSettingsScreen(
+                  key: const ValueKey('account_settings'),
+                  onUserInfoChanged: _loadCurrentUser,
+                          onProfileUpdated: () {
+                            setState(() {
+                              _currentIndex = 3;
+                            });
                   },
-                            )),
+                        )
+                      : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          if (index == 2) {
-            _navigateToTicketScreen();
-          } else if (index == 3) {
-            _navigateToAccountSettings();
-          } else {
+          if (index == 0) {
             setState(() {
-              _currentIndex = index;
+              _currentIndex = 0;
+            });
+          } else if (index == 1) {
+            setState(() {
+              _currentIndex = 1;
+            });
+          } else if (index == 2) {
+            setState(() {
+              _currentIndex = 2;
+            });
+          } else if (index == 3) {
+            setState(() {
+              _currentIndex = 3;
             });
           }
         },
@@ -520,11 +567,15 @@ class _EventSelectionScreenState extends BaseScreenState<EventSelectionScreen> {
             label: 'Ticket',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(Icons.person),
             label: 'Account',
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildTicketTab() {
+    return TicketScreen(user: _currentUser);
   }
 } 

@@ -207,4 +207,10 @@ abstract class BaseScreenState<T extends BaseScreen> extends State<T> {
       showError(errorMessage ?? 'An error occurred: $e');
     }
   }
+
+  /// Refresh method that can be overridden by child screens
+  Future<void> refresh() async {
+    // Default implementation - can be overridden by child screens
+    setState(() {});
+  }
 } 

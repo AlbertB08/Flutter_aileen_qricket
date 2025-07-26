@@ -1,0 +1,126 @@
+{
+  "invoices": [
+    {
+      "id": "INV-2024-001",
+      "eventId": "1000000005",
+      "eventName": "Art Exhibition",
+      "userId": "user123",
+      "userName": "John Doe",
+      "ticketId": "TKT-2024-001",
+      "purchaseDate": "2024-07-26T10:30:00.000Z",
+      "ticketType": "General Admission",
+      "quantity": 1,
+      "unitPrice": 25.00,
+      "totalAmount": 25.00,
+      "currency": "USD",
+      "status": "paid",
+      "paymentMethod": "credit_card",
+      "paymentDetails": {
+        "cardLast4": "1234",
+        "cardType": "Visa"
+      },
+      "billingAddress": {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "+1-555-0123",
+        "address": "123 Main Street",
+        "city": "New York",
+        "state": "NY",
+        "zipCode": "10001",
+        "country": "USA"
+      },
+      "eventDetails": {
+        "date": "2024-12-15T10:00:00.000Z",
+        "location": "Art Gallery, Bonifacio Global City",
+        "venue": "Art Gallery",
+        "time": "10:00 AM"
+      },
+      "terms": {
+        "refundPolicy": "No refunds within 24 hours of event",
+        "transferPolicy": "Tickets are transferable",
+        "entryPolicy": "Valid ID required for entry"
+      }
+    },
+    {
+      "id": "INV-2024-002",
+      "eventId": "1000000001",
+      "eventName": "Tech Conference 2024",
+      "userId": "user456",
+      "userName": "Jane Smith",
+      "ticketId": "TKT-2024-002",
+      "purchaseDate": "2024-07-25T14:15:00.000Z",
+      "ticketType": "Early Bird",
+      "quantity": 2,
+      "unitPrice": 150.00,
+      "totalAmount": 300.00,
+      "currency": "USD",
+      "status": "paid",
+      "paymentMethod": "paypal",
+      "paymentDetails": {
+        "paypalEmail": "jane.smith@example.com"
+      },
+      "billingAddress": {
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "phone": "+1-555-0456",
+        "address": "456 Oak Avenue",
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94102",
+        "country": "USA"
+      },
+      "eventDetails": {
+        "date": "2024-12-15T09:00:00.000Z",
+        "location": "Convention Center, Metro Manila",
+        "venue": "Convention Center",
+        "time": "9:00 AM"
+      },
+      "terms": {
+        "refundPolicy": "Full refund available until 7 days before event",
+        "transferPolicy": "Tickets are transferable with written notice",
+        "entryPolicy": "Conference badge required for entry"
+      }
+    },
+    {
+      "id": "INV-2024-003",
+      "eventId": "1000000002",
+      "eventName": "Music Festival",
+      "userId": "user789",
+      "userName": "Mike Johnson",
+      "ticketId": "TKT-2024-003",
+      "purchaseDate": "2024-07-24T16:45:00.000Z",
+      "ticketType": "VIP Pass",
+      "quantity": 1,
+      "unitPrice": 200.00,
+      "totalAmount": 200.00,
+      "currency": "USD",
+      "status": "pending",
+      "paymentMethod": "bank_transfer",
+      "paymentDetails": {
+        "bankName": "Chase Bank",
+        "accountLast4": "5678"
+      },
+      "billingAddress": {
+        "name": "Mike Johnson",
+        "email": "mike.johnson@example.com",
+        "phone": "+1-555-0789",
+        "address": "789 Pine Street",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zipCode": "90210",
+        "country": "USA"
+      },
+      "eventDetails": {
+        "date": "2024-11-20T16:00:00.000Z",
+        "location": "Music Park, Quezon City",
+        "venue": "Music Park",
+        "time": "4:00 PM"
+      },
+      "terms": {
+        "refundPolicy": "No refunds for VIP tickets",
+        "transferPolicy": "VIP tickets are non-transferable",
+        "entryPolicy": "VIP wristband required for entry"
+      }
+    }
+  ]
+} 

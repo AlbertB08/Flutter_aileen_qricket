@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#00B388"/>
+  
+  <!-- Q letter -->
+  <path d="M 180 120 L 332 120 Q 380 120 380 168 L 380 344 Q 380 392 332 392 L 180 392 Q 132 392 132 344 L 132 168 Q 132 120 180 120 Z" fill="white"/>
+  
+  <!-- Q tail -->
+  <path d="M 300 280 L 380 360 L 360 380 L 280 300 Z" fill="white"/>
+  
+  <!-- Inner circle for Q -->
+  <circle cx="256" cy="256" r="80" fill="#00B388"/>
+  
+  <!-- Q inner letter -->
+  <path d="M 200 180 L 312 180 Q 340 180 340 208 L 340 304 Q 340 332 312 332 L 200 332 Q 172 332 172 304 L 172 208 Q 172 180 200 180 Z" fill="white"/>
+  
+  <!-- Q inner tail -->
+  <path d="M 280 240 L 340 300 L 320 320 L 260 260 Z" fill="white"/>
+</svg> 

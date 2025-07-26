@@ -10,9 +10,27 @@ class EventInfoSection {
   EventInfoSection({required this.layout, required this.details});
 
   factory EventInfoSection.fromMap(Map<String, dynamic> map) {
+    // Helper function to fix asset paths
+    String? fixAssetPath(String? path) {
+      if (path == null || path.isEmpty) return path;
+      if (path.startsWith('http')) return path; // Network URLs are fine
+      if (path.startsWith('images/')) return 'assets/$path'; // Fix asset paths
+      return path;
+    }
+
+    // Fix asset paths in details
+    Map<String, dynamic> details = Map<String, dynamic>.from(map['details'] as Map);
+    if (details.containsKey('image')) {
+      details['image'] = fixAssetPath(details['image'] as String?);
+    }
+    if (details.containsKey('images')) {
+      List<dynamic> images = details['images'] as List<dynamic>;
+      details['images'] = images.map((img) => fixAssetPath(img as String?)).toList();
+    }
+
     return EventInfoSection(
       layout: map['layout'] as String,
-      details: Map<String, dynamic>.from(map['details'] as Map),
+      details: details,
     );
   }
 }
@@ -25,6 +43,8 @@ class EventModel {
   final DateTime _date;
   final String _location;
   final int _maxParticipants;
+  final String? _poster;
+  final String? _thumbnail;
   final List<Map<String, dynamic>> _existingComments; // Now contains comment and rating
   final List<NewsModel> _news;
   final List<EventInfoSection> _eventInfo;
@@ -37,6 +57,8 @@ class EventModel {
   DateTime get date => _date;
   String get location => _location;
   int get maxParticipants => _maxParticipants;
+  String? get poster => _poster;
+  String? get thumbnail => _thumbnail;
   List<Map<String, dynamic>> get existingComments => List.unmodifiable(_existingComments);
   List<NewsModel> get news => List.unmodifiable(_news);
   List<EventInfoSection> get eventInfo => List.unmodifiable(_eventInfo);
@@ -69,6 +91,8 @@ class EventModel {
     required DateTime date,
     required String location,
     required int maxParticipants,
+    String? poster,
+    String? thumbnail,
     required List<Map<String, dynamic>> existingComments,
     List<NewsModel>? news,
     List<EventInfoSection>? eventInfo,
@@ -79,6 +103,8 @@ class EventModel {
         _date = date,
         _location = location,
         _maxParticipants = _validateMaxParticipants(maxParticipants),
+        _poster = poster,
+        _thumbnail = thumbnail,
         _existingComments = existingComments,
         _news = news ?? [],
         _eventInfo = eventInfo ?? [];
@@ -100,6 +126,8 @@ class EventModel {
     DateTime? date,
     String? location,
     int? maxParticipants,
+    String? poster,
+    String? thumbnail,
     List<Map<String, dynamic>>? existingComments,
     List<NewsModel>? news,
     List<EventInfoSection>? eventInfo,
@@ -112,6 +140,8 @@ class EventModel {
       date: date ?? _date,
       location: location ?? _location,
       maxParticipants: maxParticipants ?? _maxParticipants,
+      poster: poster ?? _poster,
+      thumbnail: thumbnail ?? _thumbnail,
       existingComments: existingComments ?? _existingComments,
       news: news ?? _news,
       eventInfo: eventInfo ?? _eventInfo,
@@ -128,6 +158,8 @@ class EventModel {
       'date': _date.toIso8601String(),
       'location': _location,
       'maxParticipants': _maxParticipants,
+      'poster': _poster,
+      'thumbnail': _thumbnail,
       'existingComments': _existingComments,
       'news': _news.map((n) => n.toMap()).toList(),
       'eventInfo': _eventInfo.map((e) => {'layout': e.layout, 'details': e.details}).toList(),
@@ -136,6 +168,14 @@ class EventModel {
 
   /// Creates an EventModel from a Map
   factory EventModel.fromMap(Map<String, dynamic> map) {
+    // Helper function to fix asset paths
+    String? fixAssetPath(String? path) {
+      if (path == null || path.isEmpty) return path;
+      if (path.startsWith('http')) return path; // Network URLs are fine
+      if (path.startsWith('images/')) return 'assets/$path'; // Fix asset paths
+      return path;
+    }
+
     return EventModel(
       id: map['id'] as String,
       name: map['name'] as String,
@@ -144,6 +184,8 @@ class EventModel {
       date: DateTime.parse(map['date'] as String),
       location: map['location'] as String,
       maxParticipants: map['maxParticipants'] as int,
+      poster: fixAssetPath(map['poster'] as String?),
+      thumbnail: fixAssetPath(map['thumbnail'] as String?),
       existingComments: List<Map<String, dynamic>>.from(map['existingComments'] ?? []),
       news: map['news'] != null
           ? List<NewsModel>.from((map['news'] as List).map((n) => NewsModel.fromMap(n)))
@@ -170,6 +212,8 @@ class EventModel {
     required DateTime date,
     required String location,
     required int maxParticipants,
+    String? poster,
+    String? thumbnail,
     required List<Map<String, dynamic>> existingComments,
   }) {
     final random = Random();
@@ -183,6 +227,8 @@ class EventModel {
       date: date,
       location: location,
       maxParticipants: maxParticipants,
+      poster: poster,
+      thumbnail: thumbnail,
       existingComments: existingComments,
     );
   }

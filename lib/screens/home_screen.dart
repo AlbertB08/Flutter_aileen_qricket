@@ -4,6 +4,8 @@ import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'event_selection_screen.dart';
 import 'account_settings_screen.dart';
+import '../models/event_model.dart'; // Added import for EventModel
+import 'selected_event_screen.dart'; // Added import for SelectedEventScreen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,6 +29,12 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _currentUser = user;
     });
+  }
+
+  @override
+  Future<void> refresh() async {
+    await _loadCurrentUser();
+    setState(() {});
   }
 
   Future<void> _logout() async {
@@ -64,204 +72,213 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Welcome Card
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _loadCurrentUser();
+        setState(() {});
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome Card
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF00B388), Color(0xFF008C6A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
               ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                        child: const Icon(
-                          Icons.person,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back!',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _currentUser?.name ?? 'User',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF00B388), Color(0xFF008C6A)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    _currentUser?.email ?? 'user@example.com',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 14,
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          child: const Icon(
+                            Icons.person,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome back!',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _currentUser != null ? '${_currentUser!.fname} ${_currentUser!.lname}' : 'User',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _currentUser?.email ?? 'user@example.com',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Quick Actions
+            Text(
+              'Quick Actions',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Action Cards
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    icon: Icons.event,
+                    title: 'Events',
+                    subtitle: 'Browse events',
+                    color: const Color(0xFF00B388),
+                    onTap: () async {
+                      final result = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const EventSelectionScreen(),
+                        ),
+                      );
+                      // Refresh user data after returning from event selection
+                      await _loadCurrentUser();
+                      setState(() {});
+                    },
                   ),
-                ],
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildActionCard(
+                    icon: Icons.feedback,
+                    title: 'Feedback',
+                    subtitle: 'Share feedback',
+                    color: Colors.orange,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Feedback feature coming soon!'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionCard(
+                    icon: Icons.settings,
+                    title: 'Settings',
+                    subtitle: 'App preferences',
+                    color: Colors.grey,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AccountSettingsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildActionCard(
+                    icon: Icons.help,
+                    title: 'Help',
+                    subtitle: 'Get support',
+                    color: Colors.blue,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Help feature coming soon!'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Recent Activity
+            Text(
+              'Recent Activity',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
-          // Quick Actions
-          Text(
-            'Quick Actions',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+            Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: const Color(0xFF00B388).withOpacity(0.1),
+                  child: const Icon(
+                    Icons.event,
+                    color: Color(0xFF00B388),
+                  ),
+                ),
+                title: const Text('Tech Conference 2024'),
+                subtitle: const Text('You participated in this event'),
+                trailing: const Icon(Icons.check_circle, color: Colors.green),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-
-          // Action Cards
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionCard(
-                  icon: Icons.event,
-                  title: 'Events',
-                  subtitle: 'Browse events',
-                  color: const Color(0xFF00B388),
-                  onTap: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const EventSelectionScreen(),
-                      ),
-                    );
-                  },
+            const SizedBox(height: 8),
+            Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: const Color(0xFF00B388).withOpacity(0.1),
+                  child: const Icon(
+                    Icons.event,
+                    color: Color(0xFF00B388),
+                  ),
                 ),
+                title: const Text('Music Festival'),
+                subtitle: const Text('You participated in this event'),
+                trailing: const Icon(Icons.check_circle, color: Colors.green),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildActionCard(
-                  icon: Icons.feedback,
-                  title: 'Feedback',
-                  subtitle: 'Share feedback',
-                  color: Colors.orange,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Feedback feature coming soon!'),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionCard(
-                  icon: Icons.settings,
-                  title: 'Settings',
-                  subtitle: 'App preferences',
-                  color: Colors.grey,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const AccountSettingsScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildActionCard(
-                  icon: Icons.help,
-                  title: 'Help',
-                  subtitle: 'Get support',
-                  color: Colors.blue,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Help feature coming soon!'),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Recent Activity
-          Text(
-            'Recent Activity',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
             ),
-          ),
-          const SizedBox(height: 16),
-
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: const Color(0xFF00B388).withOpacity(0.1),
-                child: const Icon(
-                  Icons.event,
-                  color: Color(0xFF00B388),
-                ),
-              ),
-              title: const Text('Tech Conference 2024'),
-              subtitle: const Text('You participated in this event'),
-              trailing: const Icon(Icons.check_circle, color: Colors.green),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: const Color(0xFF00B388).withOpacity(0.1),
-                child: const Icon(
-                  Icons.event,
-                  color: Color(0xFF00B388),
-                ),
-              ),
-              title: const Text('Music Festival'),
-              subtitle: const Text('You participated in this event'),
-              trailing: const Icon(Icons.check_circle, color: Colors.green),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -326,6 +343,17 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadCurrentUser();
   }
 
+  // Add this method to navigate to SelectedEventScreen and refresh after return
+  Future<void> _navigateToSelectedEvent(EventModel event) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SelectedEventScreen(selectedEvent: event),
+      ),
+    );
+    await _loadCurrentUser();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -349,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Text(
-                  _currentUser!.name,
+                  '${_currentUser!.fname} ${_currentUser!.lname}',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                 ),
                 IconButton(

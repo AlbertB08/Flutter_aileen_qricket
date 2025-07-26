@@ -35,18 +35,22 @@ class ActivityLogEntry {
 class User {
   final String id;
   final String email;
-  final String name;
+  final String fname;
+  final String lname;
   final String password;
   final List<String> participatedEventIds;
+  final List<String> bookmarkedEventIds;
   final List<ActivityLogEntry> activityLog;
   final String? profileImagePath;
 
   User({
     required this.id,
     required this.email,
-    required this.name,
+    required this.fname,
+    required this.lname,
     required this.password,
     required this.participatedEventIds,
+    required this.bookmarkedEventIds,
     required this.activityLog,
     this.profileImagePath,
   });
@@ -55,9 +59,11 @@ class User {
     return {
       'id': id,
       'email': email,
-      'name': name,
+      'fname': fname,
+      'lname': lname,
       'password': password,
       'participatedEventIds': participatedEventIds,
+      'bookmarkedEventIds': bookmarkedEventIds,
       'activityLog': activityLog.map((entry) => entry.toJson()).toList(),
       'profileImagePath': profileImagePath,
     };
@@ -67,9 +73,11 @@ class User {
     return User(
       id: json['id'],
       email: json['email'],
-      name: json['name'],
+      fname: json['fname'],
+      lname: json['lname'],
       password: json['password'],
       participatedEventIds: List<String>.from(json['participatedEventIds']),
+      bookmarkedEventIds: List<String>.from(json['bookmarkedEventIds'] ?? []),
       activityLog: (json['activityLog'] as List)
           .map((entry) => ActivityLogEntry.fromJson(entry))
           .toList(),
@@ -80,18 +88,22 @@ class User {
   User copyWith({
     String? id,
     String? email,
-    String? name,
+    String? fname,
+    String? lname,
     String? password,
     List<String>? participatedEventIds,
+    List<String>? bookmarkedEventIds,
     List<ActivityLogEntry>? activityLog,
     String? profileImagePath,
   }) {
     return User(
       id: id ?? this.id,
       email: email ?? this.email,
-      name: name ?? this.name,
+      fname: fname ?? this.fname,
+      lname: lname ?? this.lname,
       password: password ?? this.password,
       participatedEventIds: participatedEventIds ?? this.participatedEventIds,
+      bookmarkedEventIds: bookmarkedEventIds ?? this.bookmarkedEventIds,
       activityLog: activityLog ?? this.activityLog,
       profileImagePath: profileImagePath ?? this.profileImagePath,
     );

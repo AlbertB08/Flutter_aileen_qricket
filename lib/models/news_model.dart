@@ -12,11 +12,18 @@ class NewsModel {
   });
 
   factory NewsModel.fromMap(Map<String, dynamic> map) {
+    // Helper function to fix asset paths
+    String fixAssetPath(String path) {
+      if (path.startsWith('http')) return path; // Network URLs are fine
+      if (path.startsWith('images/')) return 'assets/$path'; // Fix asset paths
+      return path;
+    }
+
     return NewsModel(
       date: DateTime.parse(map['date'] as String),
       title: map['title'] as String,
       message: map['message'] as String,
-      image: map['image'] as String,
+      image: fixAssetPath(map['image'] as String),
     );
   }
 

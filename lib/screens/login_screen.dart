@@ -16,10 +16,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isLogin = true; // Toggle between login and register
-  final _nameController = TextEditingController();
+  final _fnameController = TextEditingController();
+  final _lnameController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _privacyChecked = false;
   String? _privacyPolicyText;
   String? _termsText;
+  bool _showPassword = false;
+  bool _showConfirmPassword = false;
 
   @override
   void initState() {
@@ -46,7 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _nameController.dispose();
+    _fnameController.dispose();
+    _lnameController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -73,21 +79,35 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!success) {
           throw Exception('Invalid email or password');
         }
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const EventSelectionScreen()),
+          );
+        }
       } else {
         success = await AuthService.register(
           _emailController.text,
-          _nameController.text,
+          _fnameController.text,
+          _lnameController.text,
           _passwordController.text,
         );
         if (!success) {
           throw Exception('Email already exists');
         }
-      }
-
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const EventSelectionScreen()),
-        );
+        // Registration successful: show notification, switch to login mode, clear password fields
+        if (mounted) {
+          setState(() {
+            _isLogin = true;
+            _passwordController.clear();
+            _confirmPasswordController.clear();
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created! Please log in.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -110,6 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _toggleMode() {
     setState(() {
       _isLogin = !_isLogin;
+      _showPassword = false;
+      _showConfirmPassword = false;
       _formKey.currentState?.reset();
     });
   }
@@ -183,18 +205,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // Name field (only for registration)
+                        // First and Last Name fields (only for registration)
                         if (!_isLogin) ...[
                           TextFormField(
-                            controller: _nameController,
+                            controller: _fnameController,
                             decoration: const InputDecoration(
-                              labelText: 'Full Name',
+                              labelText: 'First Name',
                               prefixIcon: Icon(Icons.person),
                               border: OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your name';
+                                return 'Please enter your first name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _lnameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Last Name',
+                              prefixIcon: Icon(Icons.person_outline),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your last name';
                               }
                               return null;
                             },
@@ -226,11 +263,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Password field
                         TextFormField(
                           controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
+                          obscureText: !_showPassword,
+                          decoration: InputDecoration(
                             labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock),
-                            border: OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.lock),
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off),
+                              onPressed: () {
+                                setState(() {
+                                  _showPassword = !_showPassword;
+                                });
+                              },
+                            ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -242,7 +287,38 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
+                        const SizedBox(height: 16),
+
+                        // Confirm Password field
+                        if (!_isLogin) ...[
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: !_showConfirmPassword,
+                            decoration: InputDecoration(
+                              labelText: 'Confirm Password',
+                              prefixIcon: const Icon(Icons.lock),
+                              border: const OutlineInputBorder(),
+                              suffixIcon: IconButton(
+                                icon: Icon(_showConfirmPassword ? Icons.visibility : Icons.visibility_off),
+                                onPressed: () {
+                                  setState(() {
+                                    _showConfirmPassword = !_showConfirmPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please confirm your password';
+                              }
+                              if (value != _passwordController.text) {
+                                return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
                         const SizedBox(height: 24),
+                        ],
 
                         // Submit button
                         SizedBox(
@@ -280,77 +356,87 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 16),
 
                         // Privacy policy checkbox
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Checkbox(
-                              value: _privacyChecked,
-                              onChanged: (val) {
-                                setState(() {
-                                  _privacyChecked = val ?? false;
-                                });
-                              },
-                            ),
-                            const Text('I agree to the '),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Privacy Policy'),
-                                    content: SizedBox(
-                                      width: 300,
-                                      child: SingleChildScrollView(
-                                        child: Text(_privacyPolicyText ?? 'Loading...'),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _privacyChecked,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _privacyChecked = val ?? false;
+                                    });
+                                  },
+                                ),
+                                Expanded(
+                                  child: Wrap(
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    children: [
+                                      const Text('I agree to the '),
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: const Text('Privacy Policy'),
+                                              content: SizedBox(
+                                                width: 300,
+                                                child: SingleChildScrollView(
+                                                  child: Text(_privacyPolicyText ?? 'Loading...'),
+                                                ),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                  child: const Text('Close'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Privacy Policy',
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(),
-                                        child: const Text('Close'),
+                                      const Text(' and '),
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: const Text('Terms and Conditions'),
+                                              content: SizedBox(
+                                                width: 300,
+                                                child: SingleChildScrollView(
+                                                  child: Text(_termsText ?? 'Loading...'),
+                                                ),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                  child: const Text('Close'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Terms and Conditions',
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                );
-                              },
-                              child: Text(
-                                'Privacy Policy',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  decoration: TextDecoration.underline,
                                 ),
-                              ),
-                            ),
-                            const Text(' and '),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Terms and Conditions'),
-                                    content: SizedBox(
-                                      width: 300,
-                                      child: SingleChildScrollView(
-                                        child: Text(_termsText ?? 'Loading...'),
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(),
-                                        child: const Text('Close'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                'Terms and Conditions',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
+                              ],
                             ),
                           ],
                         ),

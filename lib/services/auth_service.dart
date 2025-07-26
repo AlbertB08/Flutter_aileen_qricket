@@ -80,7 +80,7 @@ class AuthService {
     return false;
   }
 
-  static Future<bool> register(String email, String name, String password) async {
+  static Future<bool> register(String email, String fname, String lname, String password) async {
     final prefs = await SharedPreferences.getInstance();
     final usersJson = prefs.getString(_usersKey);
     
@@ -99,9 +99,11 @@ class AuthService {
       final newUser = User(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         email: email,
-        name: name,
+        fname: fname,
+        lname: lname,
         password: password,
         participatedEventIds: [],
+        bookmarkedEventIds: [],
         activityLog: [
           ActivityLogEntry(
             datetime: DateTime.now(),
@@ -149,6 +151,12 @@ class AuthService {
   }
 
   static Future<void> addActivityLog(String activity, String activityDetails) async {
+    // Do not log viewing the activity log itself (case-insensitive check)
+    if (activity.trim().toLowerCase().contains('activity log view') ||
+        activity.trim().toLowerCase().contains('view activity log') ||
+        activity.trim().toLowerCase().contains('activity log')) {
+      return;
+    }
     if (_currentUser != null) {
       final updatedUser = _currentUser!.copyWith(
         activityLog: [

@@ -2,10 +2,13 @@
   "users": [
     {
       "id": "1",
+      "fname": "John",
+      "lname": "Doe",
       "email": "johndoe@email.com",
-      "name": "John Doe",
       "password": "johndoe123",
+      "profileImagePath": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       "participatedEventIds": ["1000000001"],
+      "bookmarkedEventIds": ["1000000002", "1000000003"],
       "activityLog": [
         {
           "datetime": "2024-06-01T10:30:00.000Z",
@@ -35,10 +38,13 @@
     },
     {
       "id": "2",
+      "fname": "Juan",
+      "lname": "Dela Cruz",
       "email": "juan.delacruz@email.com",
-      "name": "Juan Dela Cruz",
       "password": "juandelacruz123",
+      "profileImagePath": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
       "participatedEventIds": ["1000000002"],
+      "bookmarkedEventIds": ["1000000001", "1000000004"],
       "activityLog": [
         {
           "datetime": "2024-06-01T09:15:00.000Z",

@@ -3,6 +3,8 @@
     {
       "id": "1000000001",
       "name": "Tech Conference 2024",
+      "poster": "images/1000000001/poster.jpg",
+      "thumbnail": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
       "description": "Join us for the biggest tech conference of the year! Learn about the latest trends in technology, network with industry experts, and discover innovative solutions.",
       "category": "Technology",
       "date": "2024-12-15T09:00:00.000Z",
@@ -25,21 +27,21 @@
           "date": "2024-06-01T10:00:00.000Z",
           "title": "Early Bird Registration Now Open!",
           "message": "Don't miss out on our early bird pricing! Register before July 31st and save 30% on your conference ticket. This year's event will feature keynote speakers from Google, Microsoft, and other tech giants. Early registration also includes exclusive access to pre-conference workshops and networking events.",
-          "image": "/Image/Tech.jpg"
+          "image": "images/1000000001/poster.jpg"
         },
         {
           "date": "2024-06-01T14:00:00.000Z",
           "title": "New Speakers Announced",
           "message": "We're excited to announce additional speakers for Tech Conference 2024! Joining our lineup are AI experts from OpenAI, cybersecurity specialists from leading firms, and startup founders sharing their success stories. The complete speaker list will be available next week.",
-          "image": "https://example.com/speakers.jpg"
+          "image": "images/1000000001/image2.jpg"
         }
       ],
       "eventInfo": [
         {
           "layout": "image-left",
           "details": {
-            "image": "https://example.com/event-info.jpg",
-            "text": "This year’s Tech Conference is packed with activities, including panel discussions, coding bootcamps, and networking lounges designed to connect professionals in tech."
+            "image": "images/1000000001/image1.jpg",
+            "text": "This year's Tech Conference is packed with activities, including panel discussions, coding bootcamps, and networking lounges designed to connect professionals in tech."
           }
         }
       ]
@@ -47,6 +49,8 @@
     {
       "id": "1000000002",
       "name": "Music Festival",
+      "poster": "images/1000000002/poster.jpg",
+      "thumbnail": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop",
       "description": "Experience the ultimate music festival with top local and international artists. Three days of amazing performances, food, and unforgettable memories.",
       "category": "Entertainment",
       "date": "2024-11-20T16:00:00.000Z",
@@ -69,24 +73,24 @@
           "date": "2024-06-01T12:00:00.000Z",
           "title": "Lineup Revealed!",
           "message": "The complete lineup for Music Festival 2024 has been revealed! Headliners include international stars and local favorites. From rock to pop, EDM to acoustic, there's something for every music lover. VIP packages are selling fast - secure your spot today!",
-          "image": "https://example.com/lineup.jpg"
+          "image": "images/1000000002/poster.jpg"
         }
       ],
       "eventInfo": [
         {
           "layout": "image-right",
           "details": {
-            "image": "https://example.com/music-info.jpg",
-            "text": "Enjoy live performances on multiple stages, food trucks, and art installations. Don’t miss the after-party with top DJs!"
+            "image": "images/1000000002/image1.jpg",
+            "text": "Enjoy live performances on multiple stages, food trucks, and art installations. Don't miss the after-party with top DJs!"
           }
         },
         {
           "layout": "carousel-only",
           "details": {
             "images": [
-              "https://example.com/music-carousel1.jpg",
-              "https://example.com/music-carousel2.jpg",
-              "https://example.com/music-carousel3.jpg"
+              "images/1000000002/poster.jpg",
+              "images/1000000002/image1.jpg",
+              "images/1000000002/image2.webp"
             ]
           }
         }
@@ -95,7 +99,9 @@
     {
       "id": "1000000003",
       "name": "Business Summit",
-      "description": "Connect with business leaders, entrepreneurs, and investors. Learn about market trends, investment opportunities, and strategies for business growth.",
+      "poster": "images/1000000003/poster.png",
+      "thumbnail": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=300&fit=crop",
+      "description": "Connect with business leaders and entrepreneurs. Learn about market trends, investment opportunities, and strategies for business growth.",
       "category": "Business",
       "date": "2024-10-10T08:30:00.000Z",
       "location": "Business Center, Makati",
@@ -117,28 +123,28 @@
           "date": "2024-06-01T09:00:00.000Z",
           "title": "Investment Panel Announced",
           "message": "Our investment panel for Business Summit 2024 is now complete! Featuring venture capitalists, angel investors, and successful entrepreneurs who will share insights on funding strategies, market analysis, and building scalable businesses. Don't miss this opportunity to learn from the best in the industry.",
-          "image": "assets/images/1466e225-7104-42a9-9ab6-24a9ae4963a6.jpg"
+          "image": "images/1000000003/poster.png"
         }
       ],
       "eventInfo": [
         {
           "layout": "image-top",
           "details": {
-            "image": "https://example.com/business-top.jpg",
+            "image": "images/1000000003/poster.png",
             "text": "Keynote sessions from industry leaders, interactive workshops, and networking opportunities for entrepreneurs."
           }
         },
         {
           "layout": "image-left",
           "details": {
-            "image": "https://example.com/business-left.jpg",
+            "image": "images/1000000003/poster.png",
             "text": "Panel discussions on investment strategies and market trends."
           }
         },
         {
           "layout": "image-right",
           "details": {
-            "image": "https://example.com/business-right.jpg",
+            "image": "images/1000000003/poster.png",
             "text": "Startup pitch competition with prizes for the best business ideas."
           }
         }
@@ -147,6 +153,7 @@
     {
       "id": "1000000004",
       "name": "Sports Tournament",
+      "poster": "images/1000000004/poster.jpg",
       "description": "Compete in various sports categories including basketball, volleyball, and badminton. Open to all skill levels with prizes for winners.",
       "category": "Sports",
       "date": "2024-09-25T07:00:00.000Z",
@@ -169,7 +176,7 @@
           "date": "2024-06-01T11:00:00.000Z",
           "title": "Registration Deadline Extended",
           "message": "Due to popular demand, we've extended the registration deadline for Sports Tournament 2024! You now have until August 15th to register your team. New categories have been added including mixed doubles for badminton and 3x3 basketball. Early registrants get free tournament t-shirts!",
-          "image": "https://example.com/registration.jpg"
+          "image": "images/1000000004/poster.jpg"
         }
       ],
       "eventInfo": [
@@ -177,15 +184,16 @@
           "layout": "carousel-only",
           "details": {
             "images": [
-              "https://example.com/sports-carousel1.jpg",
-              "https://example.com/sports-carousel2.jpg"
+              "images/1000000004/poster.jpg",
+              "images/1000000004/image1.avif",
+              "images/1000000004/image2.jpg"
             ]
           }
         },
         {
           "layout": "image-top",
           "details": {
-            "image": "https://www.gl-events.com/sites/default/files/REFERENCES%202019/SEA%20GAMES%202019/SEA-GAMES-CORPS-2.jpg",
+            "image": "images/1000000004/image2.jpg",
             "text": "Opening ceremony with special guests and live entertainment."
           }
         }
@@ -194,9 +202,11 @@
     {
       "id": "1000000005",
       "name": "Art Exhibition",
+      "poster": "images/1000000005/poster.jpg",
+      "thumbnail": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop",
       "description": "Discover amazing artworks from local and international artists. Various art forms including paintings, sculptures, and digital art.",
       "category": "Arts",
-      "date": "2024-12-01T10:00:00.000Z",
+      "date": "2025-08-09T10:00:00.000Z",
       "location": "Art Gallery, Bonifacio Global City",
       "maxParticipants": 100,
       "existingComments": [
@@ -216,21 +226,21 @@
           "date": "2024-06-01T13:00:00.000Z",
           "title": "Featured Artists Announced",
           "message": "We're thrilled to announce the featured artists for Art Exhibition 2024! The exhibition will showcase works from both established and emerging artists, including international guests making their Philippine debut. Special guided tours will be available for art enthusiasts and collectors.",
-          "image": "https://example.com/artists.jpg"
+          "image": "images/1000000005/poster.jpg"
         }
       ],
       "eventInfo": [
         {
           "layout": "image-right",
           "details": {
-            "image": "https://example.com/art-right.jpg",
+            "image": "images/1000000005/image1.jpg",
             "text": "Explore contemporary artworks and meet the artists behind the masterpieces."
           }
         },
         {
           "layout": "image-top",
           "details": {
-            "image": "https://example.com/art-top.jpg",
+            "image": "images/1000000005/image2.jpg",
             "text": "Workshops and live painting sessions throughout the exhibition."
           }
         }

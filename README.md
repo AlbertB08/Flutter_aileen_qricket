@@ -1,294 +1,372 @@
-# Event-Based Feedback System
+# Qricket - Event Management & Ticket Booking App
 
-GERARD LOVE JANA FOREVER NAD EVER
+A comprehensive Flutter application for event discovery, ticket purchasing, and user engagement. Built with modern UI/UX principles and robust state management.
 
-TANGINA BARRON LOVE SHIELA
+## 🚀 Key Features
 
+### 🎫 **Event Management & Ticket Booking**
+- **Dynamic Event Discovery**: Browse upcoming and past events with rich details
+- **Event Thumbnails as Banners**: Event cards now display the event's thumbnail (local asset or network) as the top banner image
+- **Splash Screen**: Animated Qricket "Q" logo splash screen on app startup
+- **Ticket Purchase System**: Complete ticket buying flow with invoice generation
+- **QR Code Tickets**: Digital tickets with unique QR codes for easy verification
+- **Purchase History**: Track all your ticket purchases with detailed invoices
+- **Event Participation Tracking**: Automatic tracking of events you've participated in
+- **Smart Refresh System**: Automatic UI updates after ticket purchases
+- **Event Status Management**: Only show feedback for past events, not upcoming ones
 
-selos si albert kay janna 
+### 👤 **User Authentication & Profile**
+- **Secure Login/Registration**: Email-based authentication with password validation
+- **Registration Confirmation**: After registering, users see a notification and are returned to the login screen (not logged in automatically)
+- **Profile Management**: Edit mode for profile updates with compact layout
+- **Profile Pictures**: Network and local image support with temporary avatars
+- **Activity Logging**: Facebook-style activity log with privacy controls
+- **Dark Mode Toggle**: Global dark/light theme with persistence
+- **Compact Form Design**: First/last name on one line with edit mode
 
-A Flutter application that provides an object-oriented, event-based feedback system with star ratings. Each event has its own dedicated feedback section with existing comments that always remain visible, and users can add, edit, and delete their own feedback. Feedback is always tied to a unique event by a 10-digit numeric event ID.
+### 🔔 **Notification System**
+- **Smart Notifications**: Event reminders, new event announcements, updates
+- **Real-time Updates**: News, event updates, and ticket purchase confirmations
+- **Persistent Notifications**: Long-term storage with smart cleanup
+- **User-specific Alerts**: Personalized notifications based on participation
 
-**Recent Improvements:**
-- Existing comments now display a feedback title above the comment text for better clarity.
-- The feedback form is fully scrollable and supports long feedback without overflow errors.
-- The event list (home screen) updates immediately with new feedback and ratings after returning from the feedback screen—no manual refresh needed.
+### 💾 **Data Management**
+- **Local Storage**: Robust data persistence using SharedPreferences
+- **Event Bookmarking**: Save events for later viewing
+- **Invoice Management**: Complete purchase history with detailed invoices
+- **User Preferences**: Persistent settings and preferences
+- **Activity Privacy**: Control visibility of activity log entries
+- **Robust Asset Image Loading**: All asset image paths are auto-prefixed and work on mobile (for events, news, and event info)
 
-## 📦 Libraries Used
+### 🎨 **Enhanced UI/UX**
+- **Modern Design**: Clean, intuitive interface with Material Design 3
+- **Responsive Layout**: Adaptive design for different screen sizes
+- **Visual Feedback**: Real-time validation and user feedback
+- **Accessibility**: Proper contrast, readable fonts, and touch targets
+- **Facebook-style Activity Log**: Grouped by date with privacy indicators
+- **Pull-to-Refresh**: Manual refresh functionality across screens
 
-- **Flutter**: UI framework for building cross-platform apps
-- **shared_preferences**: Local data persistence for feedback, events, and user ID
-- **cupertino_icons**: iOS-style icons
-- **Dart core libraries**: `dart:convert`, `dart:math` for JSON, random, and date handling
+## 📱 App Screens
 
-## 🏗️ Object-Oriented Programming (OOP) Implementation
+### **Splash Screen**
+- **Animated Qricket Logo**: App startup splash with animated "Q" logo and app name
 
-- **Encapsulation**: All models use private fields with public getters (e.g., `_id`, `_title` in `FeedbackModel`). This hides internal data and exposes only what is necessary.
-- **Inheritance**: Shared logic and UI structure are placed in base classes, which are inherited by concrete implementations. For example:
-  - `BaseScreen` is an abstract class that provides loading, error, and success handling for all screens. `EventSelectionScreen` and `FeedbackScreen` inherit from `BaseScreen` to reuse this logic.
-  - `BaseForm` is an abstract class for forms, inherited by `FeedbackForm` for validation and submission logic.
-- **Why Inheritance?**: Inheritance allows code reuse and enforces a consistent structure across screens and forms, reducing duplication and making maintenance easier.
-- **Abstraction**: Abstract classes and interfaces (like `StorageService`) define contracts for what a service or widget must do, without specifying how. This allows for multiple implementations (e.g., `SharedPreferencesStorageService` for local storage).
-- **Why Abstraction?**: Abstraction enables flexibility and testability. You can swap out storage backends or UI components without changing the rest of the code, and you can mock services for testing.
-- **Polymorphism**: Multiple implementations of storage (e.g., `SharedPreferencesStorageService` implements `StorageService`) can be used interchangeably wherever the abstract type is expected.
-- **Factory Pattern**: Used for model creation (e.g., `FeedbackModel.create`, `EventModel.create`) to encapsulate object construction logic.
-- **Dependency Injection**: Services accept storage implementations as constructor arguments, making the code more modular and testable.
-- **Separation of Concerns**: Models, services, screens, and widgets are separated into their own files and directories, so each part of the app has a single responsibility.
+### **Authentication**
+- **Login Screen**: Email/password authentication with dark mode toggle
+- **Registration**: Complete signup with first/last name and password confirmation
+- **Privacy Policy**: Integrated terms and conditions agreement
 
-## 🚦 Workflow
+### **Main Navigation**
+- **Home Screen**: Event overview with quick actions and recent activity
+- **Event Selection**: Browse all events with search, filtering, and sorting
+- **Notifications**: Dedicated notification center with read/unread status
+- **Tickets**: View purchased tickets and access QR codes
+- **Account**: Profile management and settings
 
-1. **Event Selection**: The app starts with a list of events. Each event has a unique 10-digit numeric ID, a name, description, and status (upcoming or ended).
-2. **Feedback Management**: Selecting an event shows its feedback screen, which displays:
-   - Existing (predefined) comments for the event
-   - Your feedback for the event (if any)
-   - Statistics (total feedback, average rating)
-3. **Add/Edit/Delete Feedback**: You can add one feedback per event. You can edit or delete your feedback. Feedback is always tied to the event's unique ID and your unique user ID (stored locally).
-4. **Persistence**: All data is stored locally using `shared_preferences`, so your feedback and user ID persist across app restarts.
-5. **OOP Structure**: All business logic is handled by service classes, all data is modeled with encapsulated classes, and all UI is built with reusable widgets and base classes.
+### **Event Management**
+- **Event Details**: Comprehensive event information with dynamic layouts and thumbnail banners
+- **Ticket Purchase**: Complete buying flow with payment simulation
+- **Ticket View**: Digital ticket with QR code and download functionality
+- **Purchase History**: Detailed invoice management and history
+- **Event Feedback**: Rate and review participated events (past events only)
 
-## 📝 How to Use
+### **User Features**
+- **Account Settings**: Profile editing with edit mode, password changes, data management
+- **Activity Log**: Facebook-style activity tracking with privacy controls
+- **Saved Events**: Bookmarked events with search and filtering
+- **Settings**: App preferences and configuration
+- **Registration**: Account creation now shows a notification and returns to login screen (no auto-login)
 
-1. **Install dependencies**:
+## 🛠️ Technical Architecture
+
+### **State Management**
+- **Service-based Architecture**: Clean separation of business logic
+- **SharedPreferences**: Robust local data persistence
+- **Real-time Updates**: Immediate UI updates after data changes
+- **Error Handling**: Comprehensive error management and user feedback
+- **Refresh Mechanisms**: Automatic and manual refresh capabilities
+
+### **Data Models**
+- **User Model**: Complete user profile with activity tracking and profile images
+- **Event Model**: Rich event data with dynamic content and thumbnail support
+- **Invoice Model**: Detailed purchase and billing information
+- **Notification Model**: Smart notification system with metadata
+- **Activity Log Model**: Privacy-controlled activity tracking
+
+### **Services**
+- **AuthService**: User authentication and session management
+- **EventService**: Event data management and operations
+- **InvoiceService**: Ticket purchase and invoice generation
+- **NotificationService**: Smart notification generation and management
+- **StorageService**: Local data persistence and management
+- **FeedbackService**: Event rating and review system
+
+## 🎯 User Workflow
+
+### **1. Authentication**
+- Register with email, first/last name, and password
+- Agree to privacy policy and terms
+- Login with secure credentials
+- Toggle dark mode for preferred theme
+
+### **2. Event Discovery**
+- Browse events on the home screen
+- Use search and filtering options
+- View event details with rich information
+- Save events for later viewing
+
+### **3. Ticket Purchase**
+- Select upcoming events
+- Choose ticket type and quantity
+- Complete payment simulation
+- Receive digital ticket with QR code
+- Download ticket to device gallery
+- **Automatic UI refresh** removes "Buy Ticket" button after purchase
+
+### **4. Event Participation**
+- Attend events with purchased tickets
+- View participation history
+- Access event-specific features
+- Track activity and engagement
+- **Provide feedback** for past events only
+
+### **5. Profile Management**
+- **Edit mode required** to change profile information
+- Compact form with first/last name on one line
+- Network and local profile image support
+- Activity log with privacy controls
+- Facebook-style activity grouping
+
+## 📊 Features Overview
+
+### **Event Management**
+- ✅ Dynamic event listing with search and filters
+- ✅ Rich event details with multiple layout types
+- ✅ Event bookmarking and saved events
+- ✅ Event participation tracking
+- ✅ Event status (upcoming, ongoing, past)
+- ✅ **Feedback system** for past events only
+- ✅ **Automatic refresh** after ticket purchases
+
+### **Ticket System**
+- ✅ Complete ticket purchase flow
+- ✅ Invoice generation with unique IDs
+- ✅ QR code ticket generation
+- ✅ Purchase history tracking
+- ✅ Ticket download functionality
+- ✅ **Background image support** for tickets
+
+### **User Experience**
+- ✅ Dark/light theme toggle
+- ✅ **Profile picture management** with network support
+- ✅ **Edit mode** for profile changes
+- ✅ Password change with validation
+- ✅ **Facebook-style activity logging**
+- ✅ **Privacy controls** for activity entries
+- ✅ **Pull-to-refresh** functionality
+
+### **Data Persistence**
+- ✅ Local storage with SharedPreferences
+- ✅ User data persistence
+- ✅ Event and ticket data management
+- ✅ Settings and preferences storage
+- ✅ **Activity log privacy** settings
+
+## 🚀 Getting Started
+
+### **Prerequisites**
+- Flutter SDK (latest stable version)
+- Dart SDK
+- Android Studio / VS Code
+- Android/iOS device or emulator
+
+### **Installation**
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd Flutter_aileen_qricket
+   ```
+
+2. **Install dependencies**:
    ```bash
    flutter pub get
    ```
-2. **Run the app**:
+
+3. **Run the application**:
    ```bash
    flutter run
    ```
-3. **Select an event** from the main screen (see event ID and status)
-4. **View feedback** for the event (existing comments and your feedback)
-5. **Add, edit, or delete your feedback** (one per event)
-6. **Switch between events** to see that feedback is always tied to the correct event by its unique ID
 
-## 📚 Project Structure
+### **Configuration**
+
+The app is pre-configured with sample data:
+- **Sample Events**: Tech Conference, Music Festival, Art Exhibition
+- **Sample Users**: Pre-loaded user accounts with temporary profile images
+- **Sample Invoices**: Example purchase history
+- **Network Profile Images**: Temporary avatars from Unsplash
+
+## 📁 Project Structure
 
 ```
 lib/
-├── main.dart                 # App entry point
-├── models/                   # Data models (EventModel, FeedbackModel)
-├── services/                 # Business logic (EventService, FeedbackService, StorageService)
-├── screens/                  # UI screens (EventSelectionScreen, FeedbackScreen, BaseScreen)
-├── widgets/                  # Reusable UI components (EventCard, FeedbackCard, FeedbackForm, ExistingCommentCard, BaseForm)
+├── main.dart                    # App entry point with theme provider
+├── models/                      # Data models
+│   ├── user_model.dart         # User profile and activity
+│   ├── event_model.dart        # Event data and content
+│   ├── invoice_model.dart      # Purchase and billing data
+│   ├── feedback_model.dart     # User feedback system
+│   └── notification_model.dart # Notification system
+├── services/                    # Business logic
+│   ├── auth_service.dart       # Authentication and user management
+│   ├── event_service.dart      # Event operations
+│   ├── invoice_service.dart    # Ticket and invoice management
+│   ├── notification_service.dart # Notification system
+│   ├── feedback_service.dart   # Feedback and rating system
+│   └── storage_service.dart    # Data persistence
+├── screens/                     # UI screens
+│   ├── login_screen.dart       # Authentication
+│   ├── home_screen.dart        # Main dashboard
+│   ├── event_selection_screen.dart # Event browser
+│   ├── selected_event_screen.dart # Event details
+│   ├── ticket_purchase_screen.dart # Ticket buying
+│   ├── ticket_view_screen.dart # Digital ticket display
+│   ├── account_settings_screen.dart # Profile management
+│   ├── notification_screen.dart # Notification center
+│   ├── activity_log_screen.dart # Facebook-style activity log
+│   ├── purchase_history_screen.dart # Purchase history
+│   └── invoice_details_screen.dart # Invoice details
+├── widgets/                     # Reusable components
+│   ├── event_card.dart         # Event display cards
+│   ├── feedback_form.dart      # Feedback creation
+│   └── base_form.dart          # Form base classes
+└── assets/                      # Static assets
+    ├── data/                   # JSON data files with profile images
+    └── images/                 # Event images
 ```
 
-## 🛠️ Technical Details
+## 🎨 UI/UX Features
 
-- **Feedback is always tied to a unique event by a 10-digit numeric event ID**
-- **User ID is generated and stored locally for per-user feedback isolation**
-- **All data is persisted using shared_preferences**
-- **OOP principles are followed throughout the codebase**
+### **Modern Design**
+- Clean, intuitive interface
+- Consistent color scheme and typography
+- Responsive layout for all screen sizes
+- Smooth animations and transitions
 
-## 📖 Example Event IDs
+### **User Feedback**
+- Real-time validation
+- Loading states and progress indicators
+- Success/error messages
+- Confirmation dialogs
 
-- Tech Conference 2024: `1000000001` (upcoming)
-- Music Festival: `1000000002` (ended)
-- Business Networking Workshop: `1000000003` (ended)
+### **Accessibility**
+- High contrast text
+- Readable font sizes
+- Touch-friendly buttons
+- Screen reader support
 
-## 💡 Notes
+### **Recent UI Improvements**
+- **Splash Screen**: Animated Qricket logo on startup
+- **Compact Profile Form**: First/last name on one line
+- **Edit Mode**: Required to change profile information
+- **Network Image Support**: Profile pictures from online sources
+- **Facebook-style Activity Log**: Grouped by date with privacy
+- **Pull-to-Refresh**: Manual refresh across screens
+- **Background Images**: Event thumbnails on tickets
 
-- To reset events and feedback, clear app data or reinstall the app.
-- You can only add one feedback per event per user.
-- Feedback is never shared between events due to unique event IDs.
+## 🔧 Technical Details
+
+### **Dependencies**
+- `shared_preferences`: Local data persistence
+- `image_picker`: Profile picture selection
+- `qr_flutter`: QR code generation
+- `intl`: Date formatting and localization
+- `cupertino_icons`: iOS-style icons
+
+### **State Management**
+- Service-based architecture
+- Local state with setState
+- SharedPreferences for persistence
+- Real-time UI updates
+- **Refresh mechanisms** for data consistency
+
+### **Data Flow**
+1. User interactions trigger service calls
+2. Services update local storage
+3. UI components reflect changes immediately
+4. Data persists across app sessions
+5. **Automatic refresh** after critical actions
+
+### **Recent Technical Improvements**
+- **Activity Log Privacy**: Prevents recording "view activity log" actions
+- **Network Image Handling**: Support for online profile images
+- **Feedback System**: Only for past events
+- **Refresh Mechanisms**: Automatic UI updates
+- **Compact Forms**: Better space utilization
+- **Asset Image Path Fix**: All asset images (events, news, event info) are auto-prefixed and load correctly on mobile
+- **Registration Flow**: Registration no longer logs in automatically; user is notified and returned to login
+- **Splash Screen**: Animated logo splash on app startup
+
+## 🚀 Recent Updates
+
+### **v1.2.0 - Splash, Asset Fixes, and Registration Flow**
+- ✅ **Splash Screen**: Animated Qricket "Q" logo splash on app startup
+- ✅ **Event Thumbnails as Banners**: Event cards use event thumbnails as top images
+- ✅ **Registration Flow**: Registration shows notification and returns to login (no auto-login)
+- ✅ **Asset Image Path Fix**: All asset images now load correctly on mobile (auto-prefixed)
+- ✅ **News/Event Info Asset Fix**: News and event info images also support asset path auto-fixing
+
+### **v1.1.0 - Activity & Profile Enhancements**
+- ✅ **Facebook-style Activity Log**: Grouped by date with privacy controls
+- ✅ **Profile Image Support**: Network and local image handling
+- ✅ **Compact Profile Form**: First/last name on one line with edit mode
+- ✅ **Smart Refresh System**: Automatic UI updates after purchases
+- ✅ **Feedback System**: Only for past events, not upcoming ones
+- ✅ **Activity Privacy**: Prevents recording activity log views
+- ✅ **Pull-to-Refresh**: Manual refresh across screens
+- ✅ **Background Images**: Event thumbnails on tickets
+
+### **v1.0.0 - Core Features**
+- ✅ Complete event management system
+- ✅ Ticket purchase and QR code generation
+- ✅ User authentication and profile management
+- ✅ Notification system
+- ✅ Dark mode support
+- ✅ Local data persistence
+
+## 🚀 Future Enhancements
+
+### **Planned Features**
+- Cloud synchronization
+- Push notifications
+- Social sharing
+- Event recommendations
+- Advanced search filters
+- Payment gateway integration
+- **Real-time chat** for events
+- **Event calendar** integration
+
+### **Performance Optimizations**
+- Image caching and optimization
+- Lazy loading for large lists
+- Memory management improvements
+- Background data sync
+- **Offline mode** support
+
+## 🤝 Contributing
+
+This project demonstrates modern Flutter development practices. Feel free to contribute by:
+
+1. Reporting bugs and issues
+2. Suggesting new features
+3. Improving documentation
+4. Enhancing UI/UX
+5. Optimizing performance
+
+## 📄 License
+
+This project is open source and available under the MIT License.
 
 ---
 
-Feel free to extend the app with more events, authentication, or cloud storage while maintaining the OOP architecture!
-
-## Features
-
-### 🎯 Event Management
-- **Predefined Events**: Three sample events are automatically created:
-  - **Tech Conference 2024**: Technology conference with 5 existing comments (rated 4-5 stars)
-  - **Music Festival**: Entertainment event with 5 existing comments (rated 4-5 stars)
-  - **Business Networking Workshop**: Business event with 5 existing comments (rated 4-5 stars)
-
-### ⭐ Event-Specific Feedback System
-- **Star Ratings**: Rate events from 1 to 5 stars
-- **Event-Only Feedback**: Each event has its own dedicated feedback section
-- **One Feedback Per Event**: Users can submit only one feedback per event
-- **Existing Comments with Titles**: Predefined comments now show a descriptive title above the comment text.
-- **Existing Comments with Ratings**: Each event comes with predefined comments that have star ratings and are always visible
-- **User Feedback CRUD**: Users can add, edit, and delete their own feedback per event (one per event)
-- **Total Rating Calculation**: Calculates average rating including both existing comments and user feedback
-- **Persistent Display**: Existing comments never disappear, even after adding user feedback
-- **Event Association**: All feedback is linked to specific events
-- **Fully Scrollable Feedback Form**: The add/edit feedback form is fully scrollable and supports long feedback without overflow errors, even when the keyboard is open.
-- **Instant Home Screen Update**: The event list updates immediately with new feedback and ratings after returning from the feedback screen—no manual refresh required.
-
-### 🏗️ Object-Oriented Architecture
-- **Encapsulation**: Private fields with public getters
-- **Inheritance**: Base classes for forms, cards, screens, and services
-- **Abstraction**: Abstract base classes defining common interfaces
-- **Polymorphism**: Different implementations of base classes
-- **Design Patterns**: Factory pattern, Strategy pattern, Dependency Injection
-
-### 📱 User Interface
-- **Event-First Workflow**: Start by selecting an event, then manage its feedback
-- **Event-Specific Views**: Each event has its own feedback screen
-- **Always Visible Existing Comments**: Shows predefined comments with titles and ratings that never disappear
-- **Separate User Feedback Section**: User feedback appears in a separate section with edit/delete options
-- **Modern UI**: Clean, intuitive interface with Material Design
-- **Event Cards**: Display event information with total feedback count and average rating
-- **Feedback Cards**: Show star ratings and additional comments for the specific event
-- **Statistics**: Total feedback count, average rating, and user feedback count per event
-
-## Architecture
-
-### Models
-- **EventModel**: Represents events with existing comments and their ratings
-- **FeedbackModel**: Represents user feedback with star ratings
-
-### Services
-- **EventService**: Manages event operations and predefined events with existing comments and ratings
-- **FeedbackService**: Handles user feedback CRUD operations and rating calculations
-- **StorageService**: Abstract storage interface with SharedPreferences implementation
-
-### Screens
-- **EventSelectionScreen**: Main screen for browsing events with total feedback counts
-- **FeedbackScreen**: Manages feedback for a specific event only, shows existing comments and user feedback separately
-
-### Widgets
-- **EventCard**: Displays event information with total feedback count and rating statistics
-- **FeedbackCard**: Shows user feedback with star ratings and edit/delete options
-- **FeedbackForm**: Form for creating/editing user feedback with star rating selection
-- **ExistingCommentCard**: Displays predefined comments with star ratings for events
-
-## Getting Started
-
-1. **Install Dependencies**:
-   ```bash
-   flutter pub get
-   ```
-
-2. **Run the Application**:
-   ```bash
-   flutter run
-   ```
-
-3. **Usage**:
-   - Browse events on the main screen (shows total feedback count per event)
-   - Tap an event to view its specific feedback
-   - See existing comments with titles and ratings (always visible, cannot be edited)
-   - Add your own feedback by selecting star rating (1-5) for that event
-   - The feedback form is fully scrollable and supports long feedback
-   - Edit or delete your own feedback using the action buttons
-   - View total statistics including existing comments and user feedback
-   - **After adding or editing feedback, the event list updates instantly when you return to the home screen**
-
-## User Feedback Features
-
-### Adding Feedback
-- Select star rating (1-5) for the event
-- Add title and detailed comments
-- Submit feedback specific to the event
-- **One feedback per event**: You can only submit one feedback per event
-
-### Editing Feedback
-- Click edit button on your feedback card
-- Modify rating, title, or comments
-- Update your feedback
-
-### Deleting Feedback
-- Click delete button on your feedback card
-- Confirm deletion
-- Remove your feedback from the event
-- After deletion, you can add new feedback for that event
-
-## Rating Calculations
-
-### Total Feedback Count
-- **Existing Comments**: 5 predefined comments per event
-- **User Feedback**: Number of feedback entries added by users
-- **Total**: Existing + User feedback count
-
-### Average Rating
-- **Existing Comments**: Predefined ratings (4-5 stars)
-- **User Feedback**: User-submitted ratings
-- **Average**: (Sum of all ratings) / (Total number of ratings)
-
-## Existing Comments with Ratings
-
-Each event comes with 5 predefined comments that have star ratings and are always visible:
-
-### Tech Conference 2024
-- "Excellent speakers and content!" ⭐⭐⭐⭐⭐ (5 stars)
-- "Great networking opportunities" ⭐⭐⭐⭐ (4 stars)
-- "Well-organized event" ⭐⭐⭐⭐⭐ (5 stars)
-- "Inspiring presentations" ⭐⭐⭐⭐ (4 stars)
-- "Good venue and facilities" ⭐⭐⭐⭐ (4 stars)
-
-### Music Festival
-- "Amazing performances!" ⭐⭐⭐⭐⭐ (5 stars)
-- "Great atmosphere and vibes" ⭐⭐⭐⭐⭐ (5 stars)
-- "Well-coordinated logistics" ⭐⭐⭐⭐ (4 stars)
-- "Fantastic food options" ⭐⭐⭐⭐ (4 stars)
-- "Perfect weather and setting" ⭐⭐⭐⭐⭐ (5 stars)
-
-### Business Networking Workshop
-- "Very informative and practical" ⭐⭐⭐⭐⭐ (5 stars)
-- "Great networking opportunities" ⭐⭐⭐⭐ (4 stars)
-- "Professional and well-structured" ⭐⭐⭐⭐⭐ (5 stars)
-- "Valuable insights shared" ⭐⭐⭐⭐ (4 stars)
-- "Excellent facilitator" ⭐⭐⭐⭐⭐ (5 stars)
-
-## Rating System
-
-- **5 Stars**: Excellent experience
-- **4 Stars**: Very good experience
-- **3 Stars**: Good experience
-- **2 Stars**: Fair experience
-- **1 Star**: Poor experience
-
-## Technical Details
-
-### Dependencies
-- `shared_preferences`: Local data persistence
-- Flutter Material Design components
-
-### Storage
-- Uses SharedPreferences for local data storage
-- Events and feedback are stored as JSON strings
-- Automatic data persistence across app sessions
-
-### State Management
-- Service-based state management
-- Proper initialization and error handling
-- Loading states and user feedback
-
-## Project Structure
-
-```
-lib/
-├── main.dart                 # App entry point
-├── models/                   # Data models
-│   ├── event_model.dart     # Event with existing comments and ratings
-│   └── feedback_model.dart  # User feedback with ratings
-├── services/                # Business logic
-│   ├── event_service.dart   # Event management
-│   ├── feedback_service.dart # User feedback management
-│   └── storage_service.dart # Data persistence
-├── screens/                 # UI screens
-│   ├── base_screen.dart     # Base screen functionality
-│   ├── event_selection_screen.dart # Main event browser
-│   └── feedback_screen.dart # Event-specific feedback management
-└── widgets/                 # Reusable UI components
-    ├── base_card.dart       # Base card functionality
-    ├── base_form.dart       # Base form functionality
-    ├── event_card.dart      # Event display with total feedback counts
-    ├── feedback_card.dart   # User feedback display with edit/delete
-    ├── feedback_form.dart   # User feedback creation/editing
-    └── existing_comment_card.dart # Existing comments with ratings display
-```
-
-## Contributing
-
-This project demonstrates object-oriented programming principles in Flutter. Feel free to extend it with additional features while maintaining the OOP architecture.
-
-## 🏷️ Participated Watermark
-
-- On the home screen, events you have participated in are marked with a green "Participated" watermark on their event card.
-- This makes it easy to see at a glance which events you can leave feedback for.
-- Participation is tracked per user and stored locally using shared_preferences.
-- By default, Tech Conference 2024 (ongoing) and Music Festival (ended) are marked as participated for your user.
-- You can only add feedback to events where you see the "Participated" watermark.
+**Built with ❤️ using Flutter and Dart**

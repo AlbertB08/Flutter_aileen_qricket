@@ -1,5 +1,5 @@
 name: qricket
-description: "A new Flutter project."
+description: "A comprehensive Flutter application for event discovery, ticket purchasing, and user engagement."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -37,6 +37,8 @@ dependencies:
   shared_preferences: ^2.2.2
   qr_flutter: ^4.1.0
   image_picker: ^1.0.7
+  # image_gallery_saver: ^2.0.3+1  # Temporarily removed due to AGP compatibility issues
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -64,10 +66,12 @@ flutter:
   assets:
     - assets/data/
     - assets/images/
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
-
+    - assets/images/1000000001/
+    - assets/images/1000000002/
+    - assets/images/1000000003/
+    - assets/images/1000000004/
+    - assets/images/1000000005/
+ 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
