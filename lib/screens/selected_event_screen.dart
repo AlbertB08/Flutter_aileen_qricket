@@ -143,6 +143,11 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
     return _feedbackList.where((f) => f.eventId == widget.selectedEvent.id && f.userId == _userId).toList();
   }
 
+  /// Get all feedback for the selected event
+  List<FeedbackModel> get _allEventFeedback {
+    return _feedbackList.where((f) => f.eventId == widget.selectedEvent.id).toList();
+  }
+
   bool get _userParticipatedInEvent => _currentUser?.participatedEventIds.contains(widget.selectedEvent.id) ?? false;
 
   @override
@@ -378,21 +383,13 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                           children: [
                             // Render eventInfo sections above comments/feedback
                             ...widget.selectedEvent.eventInfo.map((info) => _buildEventInfoSection(info)).toList(),
-                            // Only show statistics for participated events
-                            if (_userParticipatedInEvent && widget.selectedEvent.isPast) _buildStatistics(),
-                            // Only show feedback sections if user participated in the event AND event is past
-                            if (_userParticipatedInEvent && widget.selectedEvent.isPast) ...[
+                            // Show statistics for all events
+                            _buildStatistics(),
+                            // Show feedback sections for everyone, but restrict adding to participants only
                             // Add feedback prompt section - only show if no user feedback and participated
-                              if (!hasUserFeedback) _buildAddFeedbackPrompt(),
-                              // Existing comments section - only visible for participated events
-                              _buildExistingCommentsSection(),
-                              // User feedback section - only visible for participated events
-                              if (hasUserFeedback) ...[
-                                const SizedBox(height: 16),
-                                _buildUserFeedbackSection(),
-                              ],
-                            ] else if (_userParticipatedInEvent && !widget.selectedEvent.isPast) ...[
-                              // Show message for participated but upcoming events
+                            if (!hasUserFeedback && _userParticipatedInEvent && widget.selectedEvent.isPast) _buildAddFeedbackPrompt(),
+                            // Show message for participated but upcoming events
+                            if (_userParticipatedInEvent && !widget.selectedEvent.isPast)
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Container(
@@ -416,8 +413,8 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                                   ),
                                 ),
                               ),
-                            ] else ...[
-                              // Show message for non-participated events
+                            // Show message for non-participated events
+                            if (!_userParticipatedInEvent)
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Container(
@@ -433,7 +430,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          'You can only view and add feedback for events you have participated in.',
+                                          'You can only add feedback for events you have participated in.',
                                           style: TextStyle(fontSize: 14, color: Colors.orange[700]),
                                         ),
                                       ),
@@ -441,6 +438,17 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                                   ),
                                 ),
                               ),
+                            // Existing comments section - always visible
+                            _buildExistingCommentsSection(),
+                            // All user feedback section - always visible
+                            if (_allEventFeedback.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              _buildAllUserFeedbackSection(),
+                            ],
+                            // User's own feedback section - only if user has feedback
+                            if (hasUserFeedback) ...[
+                              const SizedBox(height: 16),
+                              _buildUserFeedbackSection(),
                             ],
                           ],
                         ),
@@ -471,16 +479,16 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
   }
 
   Widget _buildStatistics() {
-    final userFeedback = _filteredFeedback;
+    final allEventFeedback = _allEventFeedback;
     final existingComments = widget.selectedEvent.existingComments;
-    final totalFeedbackCount = existingComments.length + userFeedback.length;
+    final totalFeedbackCount = existingComments.length + allEventFeedback.length;
     double totalRating = 0.0;
     int totalRatings = 0;
     for (final comment in existingComments) {
       totalRating += (comment['rating'] as int).toDouble();
       totalRatings++;
     }
-    for (final feedback in userFeedback) {
+    for (final feedback in allEventFeedback) {
       totalRating += feedback.rating.toDouble();
       totalRatings++;
     }
@@ -656,7 +664,7 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
                 ],
               ),
               const SizedBox(height: 8),
-              Text('These are the predefined comments for this event. Add your own feedback below!', style: TextStyle(fontSize: 14, color: Colors.blue[600]), textAlign: TextAlign.center),
+              Text('These are the predefined comments for this event.', style: TextStyle(fontSize: 14, color: Colors.blue[600]), textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -674,6 +682,115 @@ class _SelectedEventScreenState extends BaseScreenState<SelectedEventScreen> wit
               title: title,
               index: index,
               rating: rating,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAllUserFeedbackSection() {
+    final allFeedback = _allEventFeedback;
+    
+    if (allFeedback.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.feedback_outlined,
+                  color: Colors.grey[700],
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'No User Feedback Yet',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Be the first to share your experience!',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        // All user feedback header
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.purple.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.people,
+                    color: Colors.purple[700],
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'All User Feedback',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple[700],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'See what others have said about this event.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.purple[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+        
+        // All user feedback list
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: allFeedback.length,
+          itemBuilder: (context, index) {
+            final feedback = allFeedback[index];
+            final isCurrentUserFeedback = feedback.userId == _userId;
+             
+            return FeedbackCard(
+              feedback: feedback,
+              event: widget.selectedEvent,
+              onEdit: isCurrentUserFeedback ? () => _editFeedback(feedback) : null,
+              onDelete: isCurrentUserFeedback ? () => _deleteFeedback(feedback) : null,
             );
           },
         ),
